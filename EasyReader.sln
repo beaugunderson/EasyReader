@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 11
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyReader", "EasyReader\EasyReader.csproj", "{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro", "..\ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj", "{968EC596-FA63-45BC-ABA6-816A978832DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro", "ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj", "{968EC596-FA63-45BC-ABA6-816A978832DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro.Tests", "..\ReadItLaterApi.Metro.Tests\ReadItLaterApi.Metro.Tests.csproj", "{666EFA1B-415A-48ED-85AC-478145592740}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro.Tests", "ReadItLaterApi.Metro.Tests\ReadItLaterApi.Metro.Tests.csproj", "{666EFA1B-415A-48ED-85AC-478145592740}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -16,8 +16,9 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="easyreader.exe" EntryPoint="EasyReader.App">
-      <VisualElements DisplayName="EasyReader" Logo="Images\Logo.png" SmallLogo="Images\SmallLogo.png" Description="EasyReader" ForegroundText="light" BackgroundColor="#222222" InitialRotationPreference="landscape">
-        <SplashScreen Image="Images\SplashScreen.png" />
+      <VisualElements DisplayName="Easy Reader" Logo="Images\Small-Tile.png" SmallLogo="Images\SmallLogo.png" Description="Easy Reader makes your tablet useful by queueing up the news, blog posts, and other reading material that you want to read on the go." ForegroundText="light" BackgroundColor="#222222" InitialRotationPreference="landscape">
+        <DefaultTile WideLogo="Images\Wide-Tile.png" />
+        <SplashScreen Image="Images\Splash-Screen.png" />
       </VisualElements>
     </Application>
   </Applications>

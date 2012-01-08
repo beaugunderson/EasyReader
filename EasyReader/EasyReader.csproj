@@ -35,13 +35,13 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GroupedCollectionPage.xaml.cs">
+    <Compile Include="Pages\GroupedCollectionPage.xaml.cs">
       <DependentUpon>GroupedCollectionPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CollectionSummaryPage.xaml.cs">
+    <Compile Include="Pages\CollectionSummaryPage.xaml.cs">
       <DependentUpon>CollectionSummaryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DetailPage.xaml.cs">
+    <Compile Include="Pages\DetailPage.xaml.cs">
       <DependentUpon>DetailPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,18 +56,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\Logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\SmallLogo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\SplashScreen.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\StoreLogo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Images\Small-Tile.png" />
+    <Content Include="Images\Splash-Screen.png" />
+    <Content Include="Images\Wide-Tile.png" />
     <Content Include="SampleData\Images\LightGray.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -83,15 +74,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="GroupedCollectionPage.xaml">
+    <Page Include="Pages\GroupedCollectionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="CollectionSummaryPage.xaml">
+    <Page Include="Pages\CollectionSummaryPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="DetailPage.xaml">
+    <Page Include="Pages\DetailPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -101,13 +92,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj">
+    <Folder Include="References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj">
       <Project>{968ec596-fa63-45bc-aba6-816a978832dd}</Project>
       <Name>ReadItLaterApi.Metro</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="References\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v1.0\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
