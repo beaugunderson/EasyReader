@@ -62,6 +62,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
+    <Content Include="Images\UnitTestLogo.png" />
+    <Content Include="Images\UnitTestSmallLogo.png" />
+    <Content Include="Images\UnitTestSplashScreen.png" />
+    <Content Include="Images\UnitTestStoreLogo.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj">

@@ -56,8 +56,10 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\Small-Logo.png" />
     <Content Include="Images\Small-Tile.png" />
     <Content Include="Images\Splash-Screen.png" />
+    <Content Include="Images\Store-Logo.png" />
     <Content Include="Images\Wide-Tile.png" />
     <Content Include="SampleData\Images\LightGray.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
