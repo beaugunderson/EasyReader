@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 11
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyReader", "EasyReader\EasyReader.csproj", "{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro", "..\ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj", "{968EC596-FA63-45BC-ABA6-816A978832DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro.Tests", "..\ReadItLaterApi.Metro.Tests\ReadItLaterApi.Metro.Tests.csproj", "{666EFA1B-415A-48ED-85AC-478145592740}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{666EFA1B-415A-48ED-85AC-478145592740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{666EFA1B-415A-48ED-85AC-478145592740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{666EFA1B-415A-48ED-85AC-478145592740}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{666EFA1B-415A-48ED-85AC-478145592740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{666EFA1B-415A-48ED-85AC-478145592740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{666EFA1B-415A-48ED-85AC-478145592740}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E7CCC0E-9A85-4B1E-A941-809501E4DC03}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{968EC596-FA63-45BC-ABA6-816A978832DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{968EC596-FA63-45BC-ABA6-816A978832DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{968EC596-FA63-45BC-ABA6-816A978832DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{968EC596-FA63-45BC-ABA6-816A978832DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

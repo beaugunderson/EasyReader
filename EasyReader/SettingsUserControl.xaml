@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="EasyReader.SettingsUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="346"
+    Height="600"
+    mc:Ignorable="d"
+    d:DesignHeight="600" 
+    d:DesignWidth="346">
+    <Grid x:Name="LayoutRoot" Background="Gray" VerticalAlignment="Stretch">
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Top" Margin="10,10,0,0" FontSize="36"/>
+
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" RenderTransformOrigin="4.35599994659424,0.384999990463257" Margin="10,78,0,0" FontSize="20"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" RenderTransformOrigin="4.35599994659424,0.384999990463257" Margin="10,123,0,0" FontSize="20"/>
+
+        <TextBox HorizontalAlignment="Left" Text="" VerticalAlignment="Top" Margin="122,72,0,0" Width="216"/>
+        <PasswordBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="122,117,0,0" Width="216" />
+
+        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Margin="122,177,0,387" Content="Save" Click="Button_Click" />
+    </Grid>
+</UserControl>

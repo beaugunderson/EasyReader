@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="a39a24d7-f3e0-4d17-b844-ce70597c99da" Publisher="CN=beau" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>EasyReader</DisplayName>
+    <PublisherDisplayName>beau</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+    <Description>EasyReader</Description>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2</OSMinVersion>
+    <OSMaxVersionTested>6.2</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="easyreader.exe" EntryPoint="EasyReader.App">
+      <VisualElements DisplayName="EasyReader" Logo="Images\Logo.png" SmallLogo="Images\SmallLogo.png" Description="EasyReader" ForegroundText="light" BackgroundColor="#222222" InitialRotationPreference="landscape">
+        <SplashScreen Image="Images\SplashScreen.png" />
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>
