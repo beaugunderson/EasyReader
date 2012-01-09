@@ -24,7 +24,7 @@ namespace ReadItLaterApi.Metro.Tests
         [TestMethod]        
         public void TestVerifyCredentials()
         {
-            Assert.IsTrue(_api.VerifyCredentials(USERNAME, PASSWORD));
+            Assert.IsTrue(_api.VerifyCredentials());
         }
 
         [TestMethod]

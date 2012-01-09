@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Windows.Data.Json;
 
 namespace ReadItLaterApi.Metro
@@ -13,22 +14,44 @@ namespace ReadItLaterApi.Metro
 
         public Dictionary<string, ReadingListItem> List { get; set; }
 
+        private JsonObject _json;
+
         public ReadingList(JsonObject json)
         {
+            _json = json;
+
             Status = (int)json.GetNamedNumber("status");
             Since = (long)json.GetNamedNumber("since");
             Complete = (int)json.GetNamedNumber("complete");
 
             List = new Dictionary<string, ReadingListItem>();
 
-            var list = json.GetNamedObject("list");
-
-            foreach (var key in list.Keys)
+            // XXX: This throws if 'list: []' (i.e. an empty array) // Microsoft bug?
+            try
             {
-                var item = list.GetNamedObject(key);
+                var list = json.GetNamedObject("list");
 
-                List.Add(key, new ReadingListItem(item));
+                foreach (var key in list.Keys)
+                {
+                    var item = list.GetNamedObject(key);
+
+                    List.Add(key, new ReadingListItem(item));
+                }
             }
+            catch
+            {
+                Debug.WriteLine("Error retrieving the list property.");
+            }
+        }
+
+        public string Stringify()
+        {
+            if (_json != null)
+            {
+                return _json.Stringify();
+            }
+
+            throw new NotImplementedException();
         }
     }
 }

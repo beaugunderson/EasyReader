@@ -94,22 +94,22 @@ namespace ReadItLaterApi.Metro
             return ExecuteTextRequest(request).HttpResponseMessage.Content.ReadAsString();
         }
 
-        public bool VerifyCredentials(string username, string password)
+        public bool VerifyCredentials()
         {
             var request = new RestRequest("auth");
 
-            request.Parameters["username"] = username;
-            request.Parameters["password"] = password;
+            request.Parameters["username"] = Username;
+            request.Parameters["password"] = Password;
 
             return Execute(request).HttpResponseMessage.StatusCode == HttpStatusCode.OK;
         }
 
-        public bool CreateAccount(string username, string password)
+        public bool CreateAccount()
         {
             var request = new RestRequest("signup");
 
-            request.Parameters["username"] = username;
-            request.Parameters["password"] = password;
+            request.Parameters["username"] = Username;
+            request.Parameters["password"] = Password;
 
             return Execute(request).HttpResponseMessage.StatusCode == HttpStatusCode.OK;
         }

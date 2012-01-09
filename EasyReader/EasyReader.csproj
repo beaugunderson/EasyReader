@@ -11,6 +11,9 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <PackageCertificateThumbprint>4AF4C0ACAF7B89E56B5450895DAC9D089C037381</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>EasyReader_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,18 +38,17 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\GroupedCollectionPage.xaml.cs">
-      <DependentUpon>GroupedCollectionPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Data\ReadingListDataItem.cs" />
+    <Compile Include="Hacks\ObservableVector.cs" />
     <Compile Include="Pages\CollectionSummaryPage.xaml.cs">
       <DependentUpon>CollectionSummaryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\DetailPage.xaml.cs">
-      <DependentUpon>DetailPage.xaml</DependentUpon>
+    <Compile Include="Pages\WebViewDetailPage.xaml.cs">
+      <DependentUpon>WebViewDetailPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SampleData\SampleDataSource.cs" />
-    <Compile Include="SettingsUserControl.xaml.cs">
+    <Compile Include="Data\ReadingListDataSource.cs" />
+    <Compile Include="Controls\SettingsUserControl.xaml.cs">
       <DependentUpon>SettingsUserControl.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -61,13 +63,13 @@
     <Content Include="Images\Splash-Screen.png" />
     <Content Include="Images\Store-Logo.png" />
     <Content Include="Images\Wide-Tile.png" />
-    <Content Include="SampleData\Images\LightGray.png">
+    <Content Include="Data\Images\LightGray.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SampleData\Images\MediumGray.png">
+    <Content Include="Data\Images\MediumGray.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SampleData\Images\DarkGray.png">
+    <Content Include="Data\Images\DarkGray.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -76,31 +78,30 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Pages\GroupedCollectionPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Pages\CollectionSummaryPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\DetailPage.xaml">
+    <Page Include="Controls\SettingsUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="SettingsUserControl.xaml">
+    <Page Include="Pages\WebViewDetailPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="References\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj">
       <Project>{968ec596-fa63-45bc-aba6-816a978832dd}</Project>
       <Name>ReadItLaterApi.Metro</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EasyReader_TemporaryKey.2pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v1.0\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

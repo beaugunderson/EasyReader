@@ -1,53 +1,111 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 using Windows.Foundation;
 using Windows.Graphics.Display;
 
-using Windows.UI.ApplicationSettings;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 
-namespace EasyReader
+using EasyReader.Data;
+using EasyReader.Hacks;
+
+namespace EasyReader.Pages
 {
     public sealed partial class CollectionSummaryPage
     {
         public CollectionSummaryPage()
         {
             InitializeComponent();
+        }
 
-            var pane = SettingsPane.GetForCurrentView();
-            
-            var preferencesCommand = new SettingsCommand(KnownSettingsCommand.Preferences, (handler) =>
+        public void ShowSettingsUserControl()
+        {
+            SettingsUserControl.Show();
+        }
+        
+        private void UserControl_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerEventArgs e)
+        {
+            if (SettingsUserControl.IsInView)
             {
-                SettingsUserControl.Margin = ThicknessHelper.FromUniformLength(0);
-            });
-
-            pane.ApplicationCommands.Add(preferencesCommand);
-
-            Windows.UI.ApplicationSettings.SettingsPane.Show();
+                SettingsUserControl.Hide();
+            }
         }
 
         void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // Construct the appropriate destination page and set its context appropriately
-            App.ShowGroupedCollection();
         }
 
         void ItemView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Construct the appropriate destination page and set its context appropriately
             var selection = (sender as Selector).SelectedItem;
-            var selectedItem = selection as Expression.Blend.SampleData.SampleDataSource.SampleDataItem;
+            var selectedItem = selection as Data.ReadingListDataItem;
 
-            App.ShowDetail(selectedItem.Collection, selectedItem);
+            App.ShowDetail(selectedItem);
         }
 
-        private IEnumerable<Object> _items;
-        public IEnumerable<Object> Items
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += new Windows.Networking.Connectivity.NetworkStatusChangedEventHandler(NetworkInformation_NetworkStatusChanged);
+
+            Items = App.ReadingList;
+
+            Items.VectorChanged += new Windows.Foundation.Collections.VectorChangedEventHandler<object>(Items_VectorChanged);
+
+            SetupViewState();
+
+            UpdateSubTitle();
+        }
+
+        private void Items_VectorChanged(Windows.Foundation.Collections.IObservableVector<object> sender, Windows.Foundation.Collections.IVectorChangedEventArgs @event)
+        {
+            Debug.WriteLine("Collection changed.");
+
+            Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (o, target) =>
+            {
+                //ItemGridView.UpdateLayout();
+                //ItemListView.UpdateLayout();
+            }, this, null);
+        }
+
+        public void UpdateSubTitle()
+        {
+            //var text = App.HasConnectivity ? "(Online)" : "(Offline)";
+
+            string text = "(Offline)";
+
+            if (App.HasConnectivity)
+            {
+                if (App.IsUpdating)
+                {
+                    text = "(Online, Updating)";
+                }
+                else
+                {
+                    text = "(Online)";
+                }
+            }
+
+            PageSubTitle.Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (o, target) =>
+            {
+                PageSubTitle.Text = text;
+            }, this, null);
+        }
+
+        private void NetworkInformation_NetworkStatusChanged(object sender)
+        {
+            UpdateSubTitle();
+        }
+
+        #region Properties
+        private ObservableVector<object> _items;
+        public ObservableVector<object> Items
         {
             get
             {
@@ -57,6 +115,7 @@ namespace EasyReader
             set
             {
                 this._items = value;
+
                 CollectionViewSource.Source = value;
             }
         }
@@ -72,16 +131,18 @@ namespace EasyReader
             set
             {
                 this._item = value;
+                
                 LayoutRoot.DataContext = value;
             }
         }
+        #endregion
 
+        #region View state management
         // View state management for switching among Full, Fill, Snapped, and Portrait states
-
         private DisplayPropertiesEventHandler _displayHandler;
         private TypedEventHandler<ApplicationLayout, ApplicationLayoutChangedEventArgs> _layoutHandler;
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private void SetupViewState()
         {
             if (_displayHandler == null)
             {
@@ -90,15 +151,16 @@ namespace EasyReader
             }
 
             DisplayProperties.OrientationChanged += _displayHandler;
-            
+
             ApplicationLayout.GetForCurrentView().LayoutChanged += _layoutHandler;
-            
+
             SetCurrentViewState(this);
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             DisplayProperties.OrientationChanged -= _displayHandler;
+
             ApplicationLayout.GetForCurrentView().LayoutChanged -= _layoutHandler;
         }
 
@@ -120,29 +182,27 @@ namespace EasyReader
         private String GetViewState()
         {
             var orientation = DisplayProperties.CurrentOrientation;
-            
-            if (orientation == DisplayOrientations.Portrait ||
-                orientation == DisplayOrientations.PortraitFlipped) return "Portrait";
 
+            if (orientation == DisplayOrientations.Portrait ||
+                orientation == DisplayOrientations.PortraitFlipped)
+            {
+                return "Portrait";
+            }
+            
             var layout = ApplicationLayout.Value;
-            
-            if (layout == ApplicationLayoutState.Filled) return "Fill";
-            if (layout == ApplicationLayoutState.Snapped) return "Snapped";
-            
+
+            if (layout == ApplicationLayoutState.Filled)
+            {
+                return "Fill";
+            }
+
+            if (layout == ApplicationLayoutState.Snapped)
+            {
+                return "Snapped";
+            }
+
             return "Full";
         }
-
-        private void UserControl_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerEventArgs e)
-        {
-            if (SettingsUserControl.Margin.Right == 0)
-            {
-                SettingsUserControl.Margin = ThicknessHelper.FromLengths(0, 0, -346, 0);
-            }
-        }
-
-        private void Button_Click(EventArgs e)
-        {
-
-        }
+        #endregion
     }
 }
