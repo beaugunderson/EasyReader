@@ -16,20 +16,20 @@ namespace ReadItLaterApi.Metro
 
         private JsonObject _json;
 
-        public ReadingList(JsonObject json)
+        public ReadingList(string json)
         {
-            _json = json;
+            _json = new JsonObject(json);
 
-            Status = (int)json.GetNamedNumber("status");
-            Since = (long)json.GetNamedNumber("since");
-            Complete = (int)json.GetNamedNumber("complete");
+            Status = (int)_json.GetNamedNumber("status");
+            Since = (long)_json.GetNamedNumber("since");
+            Complete = (int)_json.GetNamedNumber("complete");
 
             List = new Dictionary<string, ReadingListItem>();
 
             // XXX: This throws if 'list: []' (i.e. an empty array) // Microsoft bug?
             try
             {
-                var list = json.GetNamedObject("list");
+                var list = _json.GetNamedObject("list");
 
                 foreach (var key in list.Keys)
                 {

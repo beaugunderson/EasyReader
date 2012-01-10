@@ -9,7 +9,6 @@
     mc:Ignorable="d"
     d:DesignWidth="1366"
     d:DesignHeight="768">
-
     <!--Common resources for default dark theme applications-->
     <UserControl.Resources>
         <SolidColorBrush x:Key="PageBackgroundBrush" Color="#FF1A1A1A"/>
@@ -135,7 +134,7 @@
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
-                
+
                 <VisualState x:Name="Fill">
                     <Storyboard>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Style" Storyboard.TargetName="ContentWebView">
@@ -175,8 +174,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <Rectangle x:Name="WebViewRectangle" Grid.Row="1" Visibility="Collapsed" 
+                   Margin="{Binding Margin, ElementName=ContentWebView}"/>
+
         <WebView Grid.Row="1" x:Name="ContentWebView"/>
-            
+
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -189,7 +191,7 @@
             <TextBlock x:Name="PageTitle" Style="{StaticResource PageTitleStyle}" Grid.Column="1" />
         </Grid>
 
-        <ApplicationBar x:Name="ApplicationBar" VerticalAlignment="Bottom" Grid.Row="1" DismissMode="LightDismiss" TuckHeight="0">
+        <ApplicationBar x:Name="ApplicationBar" VerticalAlignment="Bottom" Grid.Row="1" DismissMode="LightDismiss" TuckHeight="0" Opened="ApplicationBar_Opened" Closed="ApplicationBar_Closed">
             <Grid Margin="0,0,0,18">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Margin="48,18,0,0" Width="72">
@@ -212,7 +214,7 @@
                         <Button x:Name="NextButton" IsEnabled="{Binding CanFlipNext}" Click="NextButton_Click" Style="{StaticResource AppBarButtonStyle}">
                             <Path Fill="White" Stretch="UniformToFill" Canvas.Left="9.269" Canvas.Top="12.263" Width="20.928" Height="15.477" Data="F1M23.4424,18.0596L17.2984,12.2626L22.2954,12.2626L30.5144,20.0176L22.3314,27.7396L17.3354,27.7396L23.4424,21.9766L9.5864,21.9766L9.5864,18.0596z"/>
                         </Button>
-                        
+
                         <TextBlock Text="Next" Style="{StaticResource AppBarTextStyle}"/>
                     </StackPanel>
                 </StackPanel>

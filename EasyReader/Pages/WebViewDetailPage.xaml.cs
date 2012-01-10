@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -27,16 +28,25 @@ namespace EasyReader.Pages
         private DisplayPropertiesEventHandler _displayHandler;
         private TypedEventHandler<ApplicationLayout, ApplicationLayoutChangedEventArgs> _layoutHandler;
 
-        private const string _formatString = @"<html>
+        private const string _formatString = @"<!DOCTYPE html>
+<html>
  <head>
   <title>{0}</title>
+
+  <script>
+   window.external.notify('Complete');
+  </script>
 
   <style type=""text/css"">
    body {{
       font-family: Segoe UI;
-      padding: 1em;
+      padding: 0;
       background-color: black;
       color: white;
+   }}
+
+   a {{
+      color: #fde405;
    }}
 
    pre {{
@@ -52,7 +62,7 @@ namespace EasyReader.Pages
 
         private string WrapHtml(string title, string body)
         {
-            // Remove weird dangling element
+            // Remove weird dangling element and nodeIndex attributes
             Regex dangling = new Regex(@"\s*</d\s*$", RegexOptions.IgnoreCase);
             Regex nodeIndex = new Regex(@"\s+nodeIndex=""\d+""", RegexOptions.IgnoreCase);
 
@@ -79,14 +89,29 @@ namespace EasyReader.Pages
             
             SetCurrentOrientation(this);
 
+            ContentWebView.LoadCompleted += new Windows.UI.Xaml.Navigation.LoadCompletedEventHandler(ContentWebView_LoadCompleted);
+            ContentWebView.ScriptNotify += new NotifyEventHandler(ContentWebView_ScriptNotify);
+
             if (Item != null)
             {
+                PageTitle.Text = Item.Title;
+
                 var content = WrapHtml(Item.Title, Item.Content);
 
-                PageTitle.Text = Item.Title;
+                //ContentWebView.Navigate(new Uri("http://www.bing.com/"));
 
                 ContentWebView.NavigateToString(content);
             }
+        }
+
+        private void ContentWebView_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            Debug.WriteLine("ScriptNotify: " + e.Value);
+        }
+
+        private void ContentWebView_LoadCompleted(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+        {
+            Debug.WriteLine("Redrawing WebViewBrush");
         }
 
         void HomeButton_Click(object sender, RoutedEventArgs e)
@@ -151,6 +176,27 @@ namespace EasyReader.Pages
             }
             
             return "Full";
+        }
+
+        private void ApplicationBar_Opened(object sender, object e)
+        {
+            var webViewBrush = new WebViewBrush();
+
+            webViewBrush.SourceName = "ContentWebView";
+            webViewBrush.Redraw();
+
+            WebViewRectangle.Fill = webViewBrush;
+
+            WebViewRectangle.Visibility = Visibility.Visible;
+
+            ContentWebView.Visibility = Visibility.Collapsed;
+        }
+
+        private void ApplicationBar_Closed(object sender, object e)
+        {
+            ContentWebView.Visibility = Visibility.Visible;
+
+            WebViewRectangle.Visibility = Visibility.Collapsed;
         }
     }
 }

@@ -4,18 +4,18 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.Activation;
-
+using Windows.Data.Json;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-
 using Windows.Storage;
 
 using EasyReader.Data;
 using EasyReader.Hacks;
 using EasyReader.Pages;
+
 using ReadItLaterApi.Metro;
-using Windows.Data.Json;
+using System.Collections.Generic;
 
 namespace EasyReader
 {
@@ -104,19 +104,26 @@ namespace EasyReader
 
             foreach (var item in readingList.List)
             {
-                Debug.WriteLine(string.Format("Getting text for '{0}'", item.Key));
-
-                var text = ReadItLaterApi.GetText(item.Value);
-
-                Debug.WriteLine(string.Format("Saving text for '{0}'", item.Key));
-
-                SaveItemToFile(_applicationData.LocalFolder, item.Key, text);
+                var text = GetTextFromListItem(item);
 
                 _summaryPage.Dispatcher.Invoke(CoreDispatcherPriority.Normal, (o, target) =>
                 {
                     _readingListData.AddItem(item.Value, text);
                 }, this, null);
             }
+        }
+
+        private string GetTextFromListItem(KeyValuePair<string, ReadingListItem> item)
+        {
+            Debug.WriteLine(string.Format("Getting text for '{0}'", item.Key));
+
+            var text = ReadItLaterApi.GetText(item.Value);
+
+            Debug.WriteLine(string.Format("Saving text for '{0}'", item.Key));
+
+            SaveItemToFile(_applicationData.LocalFolder, item.Key, text);
+
+            return text;
         }
 
         public async void SaveItemToFile(StorageFolder folder, string id, string data)
@@ -144,6 +151,11 @@ namespace EasyReader
         public async Task<string> ReadItemFromFile(StorageFolder folder, string id)
         {
             var filename = string.Format("{0}.json", id);
+
+            Debug.WriteLine(string.Format("Getting text for '{0}'", filename));
+
+            Debug.WriteLine(string.Format("Local folder: {0}",
+                _applicationData.LocalFolder.Path));
 
             var file = await folder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.OpenIfExists);
 
@@ -189,22 +201,6 @@ namespace EasyReader
 
             _readingListData = new ReadingListDataSource();
 
-            var readingList = await ReadItemFromFile(_applicationData.RoamingFolder, "reading-list");
-
-            if (readingList != null)
-            {
-                var json = new JsonObject(readingList);
-
-                var list = new ReadingList(json);
-
-                foreach (var item in list.List)
-                {
-                    var content = await ReadItemFromFile(_applicationData.LocalFolder, item.Key);
-
-                    _readingListData.AddItem(item.Value, content);
-                }
-            }
-
             ReadingList = _readingListData.Items;
 
             // Setup the Settings command to open our SettingsUserControl on the home page
@@ -220,6 +216,8 @@ namespace EasyReader
             {
                 ShowHomePageAndOpenSettings();
             }
+
+            await ReadItemsFromDisk();
 
             // Start a timer to update the reading list
             _updateReadingListTimer = new Timer(delegate
@@ -243,6 +241,35 @@ namespace EasyReader
                 null,
                 TimeSpan.FromSeconds(5), 
                 TimeSpan.FromMinutes(5));
+        }
+
+        private async Task ReadItemsFromDisk()
+        {
+            var json = await ReadItemFromFile(_applicationData.RoamingFolder, "reading-list");
+
+            if (json != null)
+            {
+                var list = new ReadingList(json);
+
+                foreach (var item in list.List)
+                {
+                    var content = await ReadItemFromFile(_applicationData.LocalFolder, item.Key);
+
+                    if (content == null)
+                    {
+                        if (App.HasConnectivity)
+                        {
+                            content = GetTextFromListItem(item);
+                        }
+                        else
+                        {
+                            content = "Sorry, this content hasn't been saved for offline reading.";
+                        }
+                    }
+
+                    _readingListData.AddItem(item.Value, content);
+                }
+            }
         }
 
         private void SetupSettingsPane()

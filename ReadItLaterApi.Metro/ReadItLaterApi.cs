@@ -74,7 +74,7 @@ namespace ReadItLaterApi.Metro
 
             var response = Execute(request);
 
-            var json = new JsonObject(response.HttpResponseMessage.Content.ReadAsString());
+            var json = response.HttpResponseMessage.Content.ReadAsString();
 
             return new ReadingList(json);
         }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro", "Rea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro.Tests", "ReadItLaterApi.Metro.Tests\ReadItLaterApi.Metro.Tests.csproj", "{666EFA1B-415A-48ED-85AC-478145592740}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkupConverter.Metro", "MarkupConverter.Metro\MarkupConverter.Metro.csproj", "{FB9BED24-A3E4-422F-954C-905A56EEFB75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{968EC596-FA63-45BC-ABA6-816A978832DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{968EC596-FA63-45BC-ABA6-816A978832DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{968EC596-FA63-45BC-ABA6-816A978832DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB9BED24-A3E4-422F-954C-905A56EEFB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB9BED24-A3E4-422F-954C-905A56EEFB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB9BED24-A3E4-422F-954C-905A56EEFB75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB9BED24-A3E4-422F-954C-905A56EEFB75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
