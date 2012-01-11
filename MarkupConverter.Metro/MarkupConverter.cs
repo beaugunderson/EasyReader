@@ -7,7 +7,7 @@ namespace MarkupConverter
         //string ConvertXamlToHtml(string xamlText);
         string ConvertHtmlToXaml(string htmlText);
         //string ConvertRtfToHtml(string rtfText);
-        string ConvertHtmlToRtf(string htmlText);
+        //string ConvertHtmlToRtf(string htmlText);
     }
 
     public class MarkupConverter : IMarkupConverter
@@ -27,9 +27,9 @@ namespace MarkupConverter
         //    return RtfToHtmlConverter.ConvertRtfToHtml(rtfText);
         //}
 
-        public string ConvertHtmlToRtf(string htmlText)
-        {
-            return HtmlToRtfConverter.ConvertHtmlToRtf(htmlText);
-        }
+        //public string ConvertHtmlToRtf(string htmlText)
+        //{
+        //    return HtmlToRtfConverter.ConvertHtmlToRtf(htmlText);
+        //}
     }
 }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadItLaterApi.Metro.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkupConverter.Metro", "MarkupConverter.Metro\MarkupConverter.Metro.csproj", "{FB9BED24-A3E4-422F-954C-905A56EEFB75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkupConverter.Metro.Tests", "MarkupConverter.Metro.Tests\MarkupConverter.Metro.Tests.csproj", "{E8E799A2-3832-4DC8-A493-D8C6D82E74E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,12 @@ Global
 		{968EC596-FA63-45BC-ABA6-816A978832DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{968EC596-FA63-45BC-ABA6-816A978832DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{968EC596-FA63-45BC-ABA6-816A978832DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8E799A2-3832-4DC8-A493-D8C6D82E74E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8E799A2-3832-4DC8-A493-D8C6D82E74E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8E799A2-3832-4DC8-A493-D8C6D82E74E1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E8E799A2-3832-4DC8-A493-D8C6D82E74E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8E799A2-3832-4DC8-A493-D8C6D82E74E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8E799A2-3832-4DC8-A493-D8C6D82E74E1}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{FB9BED24-A3E4-422F-954C-905A56EEFB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FB9BED24-A3E4-422F-954C-905A56EEFB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB9BED24-A3E4-422F-954C-905A56EEFB75}.Release|Any CPU.ActiveCfg = Release|Any CPU

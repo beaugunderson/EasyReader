@@ -38,15 +38,25 @@ namespace EasyReader.Pages
   </script>
 
   <style type=""text/css"">
-   body {{
+   html, body {{
       font-family: Segoe UI;
       padding: 0;
-      background-color: black;
+      margin: 0;
+      padding-left: 1em;
+      padding-right: 2em;
+      background-color: #0c0c0c;
       color: white;
+   }}
+
+   /* XXX: Doesn't work */
+   ::selection {{
+      background-color: #fde405;
+      color: #0c0c0c;
    }}
 
    a {{
       color: #fde405;
+      text-decoration: none;
    }}
 
    pre {{
@@ -124,13 +134,13 @@ namespace EasyReader.Pages
             App.ShowCollectionSummary();
         }
 
-        void PreviousButton_Click(object sender, RoutedEventArgs e)
-        {
-        }
+        //void PreviousButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //}
 
-        void NextButton_Click(object sender, RoutedEventArgs e)
-        {
-        }
+        //void NextButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //}
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
@@ -178,25 +188,25 @@ namespace EasyReader.Pages
             return "Full";
         }
 
-        private void ApplicationBar_Opened(object sender, object e)
-        {
-            var webViewBrush = new WebViewBrush();
+        //private void ApplicationBar_Opened(object sender, object e)
+        //{
+        //    var webViewBrush = new WebViewBrush();
 
-            webViewBrush.SourceName = "ContentWebView";
-            webViewBrush.Redraw();
+        //    webViewBrush.SourceName = "ContentWebView";
+        //    webViewBrush.Redraw();
 
-            WebViewRectangle.Fill = webViewBrush;
+        //    WebViewRectangle.Fill = webViewBrush;
 
-            WebViewRectangle.Visibility = Visibility.Visible;
+        //    WebViewRectangle.Visibility = Visibility.Visible;
 
-            ContentWebView.Visibility = Visibility.Collapsed;
-        }
+        //    ContentWebView.Visibility = Visibility.Collapsed;
+        //}
 
-        private void ApplicationBar_Closed(object sender, object e)
-        {
-            ContentWebView.Visibility = Visibility.Visible;
+        //private void ApplicationBar_Closed(object sender, object e)
+        //{
+        //    ContentWebView.Visibility = Visibility.Visible;
 
-            WebViewRectangle.Visibility = Visibility.Collapsed;
-        }
+        //    WebViewRectangle.Visibility = Visibility.Collapsed;
+        //}
     }
 }

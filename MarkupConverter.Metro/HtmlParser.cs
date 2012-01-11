@@ -369,9 +369,9 @@ namespace MarkupConverter
             
             for (int i = 0; i < htmlElement.Attributes.Count; i++)
             {
-                XmlAttribute attribute = htmlElement.Attributes[i];
+                var attribute = htmlElement.Attributes[i];
 
-                htmlElementCopy.SetAttribute(attribute.Name, attribute.Value);
+                htmlElementCopy.SetAttribute(attribute.NodeName, (string)attribute.NodeValue);
             }
             
             return htmlElementCopy;
@@ -455,7 +455,7 @@ namespace MarkupConverter
             InvariantAssert(_openedElements.Count > 0, "CloseElement: Stack of opened elements cannot be empty, as we have at least one artificial root element");
 
             // Check if the element is opened and still waiting to be added to the parent
-            if (_pendingInlineElements.Count > 0 && _pendingInlineElements.Peek().LocalName == htmlElementName)
+            if (_pendingInlineElements.Count > 0 && (string)_pendingInlineElements.Peek().LocalName == htmlElementName)
             {
                 // Closing an empty inline element.
                 // Note that HtmlConverter will skip empty inlines, but for completeness we keep them here on parser level.

@@ -7,12 +7,14 @@
     Loaded="Page_Loaded" 
     Unloaded="Page_Unloaded"
     mc:Ignorable="d"
+    Background="#FF1A1A1A"
     d:DesignWidth="1366"
     d:DesignHeight="768">
     <!--Common resources for default dark theme applications-->
     <UserControl.Resources>
         <SolidColorBrush x:Key="PageBackgroundBrush" Color="#FF1A1A1A"/>
         <SolidColorBrush x:Key="PageForegroundBrush" Color="White"/>
+
         <SolidColorBrush x:Key="HighlightBrush" Color="#FF26A0DA"/>
 
         <Style x:Key="DetailContentStackPanelStyle" TargetType="StackPanel">
@@ -76,7 +78,7 @@
         <!--Temporary: placeholders for shared command button visuals and finalized icons -->
         <!--AppBar Button Styles-->
 
-        <Style x:Key="AppBarButtonStyle" TargetType="Button">
+        <!--<Style x:Key="AppBarButtonStyle" TargetType="Button">
             <Setter Property="MinWidth" Value="40" />
             <Setter Property="Width" Value="40" />
             <Setter Property="Height" Value="40" />
@@ -121,7 +123,7 @@
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,7,0,0"/>
-        </Style>
+        </Style>-->
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootGridStyle}">
@@ -191,7 +193,7 @@
             <TextBlock x:Name="PageTitle" Style="{StaticResource PageTitleStyle}" Grid.Column="1" />
         </Grid>
 
-        <ApplicationBar x:Name="ApplicationBar" VerticalAlignment="Bottom" Grid.Row="1" DismissMode="LightDismiss" TuckHeight="0" Opened="ApplicationBar_Opened" Closed="ApplicationBar_Closed">
+        <!--<ApplicationBar x:Name="ApplicationBar" VerticalAlignment="Bottom" Grid.Row="1" DismissMode="LightDismiss" TuckHeight="0" Opened="ApplicationBar_Opened" Closed="ApplicationBar_Closed">
             <Grid Margin="0,0,0,18">
                 <StackPanel Orientation="Horizontal">
                     <StackPanel Margin="48,18,0,0" Width="72">
@@ -219,6 +221,6 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-        </ApplicationBar>
+        </ApplicationBar>-->
     </Grid>
 </UserControl>
