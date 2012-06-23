@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace MarkupConverter.Metro.Tests
 {
@@ -14,9 +14,9 @@ namespace MarkupConverter.Metro.Tests
         [TestMethod]        
         public void ConvertHtmlToXamlTest()
         {
-            var m = new MarkupConverter();
+            var markupConverter = new MarkupConverter();
 
-            var html = @"<!DOCTYPE html>
+            const string html = @"<!DOCTYPE html>
 <html>
  <head>
   <title>Just testing...</title>
@@ -35,7 +35,7 @@ namespace MarkupConverter.Metro.Tests
  </body>
 </html>";
 
-            var xaml = m.ConvertHtmlToXaml(html);
+            var xaml = markupConverter.ConvertHtmlToXaml(html);
 
             Debug.WriteLine(xaml);
         }

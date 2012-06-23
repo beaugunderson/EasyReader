@@ -2,3 +2,5 @@
 *.user
 /MarkupConverter/
 /MarkupConverterTester/
+/_ReSharper.EasyReader/
+/TestResults/

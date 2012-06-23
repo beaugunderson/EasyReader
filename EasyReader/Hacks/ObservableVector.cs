@@ -12,20 +12,18 @@ namespace EasyReader.Hacks
     //NOTE: Currently ObservableCollection does not support change notifications so in the interim please use the extension method ToObservableVector<T> 
     public class ObservableVector<T> : IObservableVector<T>, IList<T>, IEnumerable<T>, IEnumerable
     {
-        private IList<T> _internalCollection;
-        private ReadOnlyCollection<T> _readOnlyCollection;
+        private readonly IList<T> _internalCollection;
+        private readonly ReadOnlyCollection<T> _readOnlyCollection;
 
         public ObservableVector(INotifyCollectionChanged list)
         {
-            if (list is IList<T>)
-            {
-                _internalCollection = list as IList<T>;
-                _readOnlyCollection = new ReadOnlyCollection<T>((IList<T>)list);
-            }
-            else
+            if (!(list is IList<T>))
             {
                 throw new Exception("Must implement IList<T>");
             }
+
+            _internalCollection = list as IList<T>;
+            _readOnlyCollection = new ReadOnlyCollection<T>((IList<T>) list);
         }
 
         #region IList<object> Members

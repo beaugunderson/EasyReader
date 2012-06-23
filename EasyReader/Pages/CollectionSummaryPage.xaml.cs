@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 
-using Windows.Foundation;
 using Windows.Graphics.Display;
-
+using Windows.Networking.Connectivity;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 
 using EasyReader.Data;
 using EasyReader.Hacks;
@@ -29,7 +26,7 @@ namespace EasyReader.Pages
             SettingsUserControl.Show();
         }
         
-        private void UserControl_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerEventArgs e)
+        private void UserControl_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             if (SettingsUserControl.IsInView)
             {
@@ -44,19 +41,20 @@ namespace EasyReader.Pages
         void ItemView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Construct the appropriate destination page and set its context appropriately
-            var selection = (sender as Selector).SelectedItem;
-            var selectedItem = selection as Data.ReadingListDataItem;
+            var selection = ((Selector) sender).SelectedItem;
+
+            var selectedItem = selection as ReadingListDataItem;
 
             App.ShowDetail(selectedItem);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += new Windows.Networking.Connectivity.NetworkStatusChangedEventHandler(NetworkInformation_NetworkStatusChanged);
+            NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
 
             Items = App.ReadingList;
 
-            Items.VectorChanged += new Windows.Foundation.Collections.VectorChangedEventHandler<object>(Items_VectorChanged);
+            Items.VectorChanged += Items_VectorChanged;
 
             SetupViewState();
 
@@ -65,37 +63,28 @@ namespace EasyReader.Pages
 
         private void Items_VectorChanged(Windows.Foundation.Collections.IObservableVector<object> sender, Windows.Foundation.Collections.IVectorChangedEventArgs @event)
         {
-            Debug.WriteLine("Collection changed.");
+            //Debug.WriteLine("Collection changed.");
 
-            Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (o, target) =>
-            {
-                //ItemGridView.UpdateLayout();
-                //ItemListView.UpdateLayout();
-            }, this, null);
+            //Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate
+            //{
+            //    ItemGridView.UpdateLayout();   
+            //    ItemListView.UpdateLayout();
+            //});
         }
 
         public void UpdateSubTitle()
         {
-            //var text = App.HasConnectivity ? "(Online)" : "(Offline)";
-
             string text = "(Offline)";
 
             if (App.HasConnectivity)
             {
-                if (App.IsUpdating)
-                {
-                    text = "(Online, Updating)";
-                }
-                else
-                {
-                    text = "(Online)";
-                }
+                text = App.IsUpdating ? "(Online, Updating)" : "(Online)";
             }
 
-            PageSubTitle.Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (o, target) =>
+            PageSubTitle.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate
             {
                 PageSubTitle.Text = text;
-            }, this, null);
+            });
         }
 
         private void NetworkInformation_NetworkStatusChanged(object sender)
@@ -109,12 +98,12 @@ namespace EasyReader.Pages
         {
             get
             {
-                return this._items;
+                return _items;
             }
 
             set
             {
-                this._items = value;
+                _items = value;
 
                 CollectionViewSource.Source = value;
             }
@@ -125,12 +114,12 @@ namespace EasyReader.Pages
         {
             get
             {
-                return this._item;
+                return _item;
             }
 
             set
             {
-                this._item = value;
+                _item = value;
                 
                 LayoutRoot.DataContext = value;
             }
@@ -140,7 +129,7 @@ namespace EasyReader.Pages
         #region View state management
         // View state management for switching among Full, Fill, Snapped, and Portrait states
         private DisplayPropertiesEventHandler _displayHandler;
-        private TypedEventHandler<ApplicationLayout, ApplicationLayoutChangedEventArgs> _layoutHandler;
+        private WindowSizeChangedEventHandler _layoutHandler;
 
         private void SetupViewState()
         {
@@ -152,7 +141,7 @@ namespace EasyReader.Pages
 
             DisplayProperties.OrientationChanged += _displayHandler;
 
-            ApplicationLayout.GetForCurrentView().LayoutChanged += _layoutHandler;
+            Window.Current.SizeChanged += _layoutHandler;
 
             SetCurrentViewState(this);
         }
@@ -161,10 +150,10 @@ namespace EasyReader.Pages
         {
             DisplayProperties.OrientationChanged -= _displayHandler;
 
-            ApplicationLayout.GetForCurrentView().LayoutChanged -= _layoutHandler;
+            Window.Current.SizeChanged -= _layoutHandler;
         }
 
-        private void Page_LayoutChanged(object sender, ApplicationLayoutChangedEventArgs e)
+        private void Page_LayoutChanged(object sender, WindowSizeChangedEventArgs e)
         {
             SetCurrentViewState(this);
         }
@@ -176,7 +165,7 @@ namespace EasyReader.Pages
 
         private void SetCurrentViewState(Control viewStateAwareControl)
         {
-            VisualStateManager.GoToState(viewStateAwareControl, this.GetViewState(), false);
+            VisualStateManager.GoToState(viewStateAwareControl, GetViewState(), false);
         }
 
         private String GetViewState()
@@ -188,19 +177,19 @@ namespace EasyReader.Pages
             {
                 return "Portrait";
             }
-            
-            var layout = ApplicationLayout.Value;
 
-            if (layout == ApplicationLayoutState.Filled)
+            var layout = ApplicationView.Value;
+
+            if (layout == ApplicationViewState.Filled)
             {
                 return "Fill";
             }
-
-            if (layout == ApplicationLayoutState.Snapped)
+            
+            if (layout == ApplicationViewState.Snapped)
             {
                 return "Snapped";
             }
-
+            
             return "Full";
         }
         #endregion

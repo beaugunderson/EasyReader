@@ -9,13 +9,11 @@
 //---------------------------------------------------------------------------
 
 using System;
-using System.Xml;
-using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using Windows.Data.Xml.Dom; // StringBuilder
+using Windows.Data.Xml.Dom;
+
+// StringBuilder
 
 // important TODOS: 
 // TODO 1. Start tags: The ParseXmlElement function has been modified to be called after both the 
@@ -68,8 +66,7 @@ using Windows.Data.Xml.Dom; // StringBuilder
 // reading a table and ignore them otherwise? This may be too much of a load on the parser, I think it's better if the converter
 // deals with it
 
-
-namespace MarkupConverter
+namespace MarkupConverter.Metro
 {
     /// <summary>
     /// HtmlParser class accepts a string of possibly badly formed Html, parses it and returns a string

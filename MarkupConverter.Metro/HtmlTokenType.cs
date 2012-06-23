@@ -8,7 +8,7 @@
 //
 //---------------------------------------------------------------------------
 
-namespace MarkupConverter
+namespace MarkupConverter.Metro
 {
     /// <summary>
     /// types of lexical tokens for html-to-xaml converter

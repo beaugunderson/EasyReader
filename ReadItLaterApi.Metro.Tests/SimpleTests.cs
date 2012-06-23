@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace ReadItLaterApi.Metro.Tests
 {
     [TestClass]
     public class SimpleTests
     {
-        public static string USERNAME = "beau-testing";
-        public static string PASSWORD = "testing";
+        private const string USERNAME = "beau-testing";
+        private const string PASSWORD = "testing";
 
-        public ReadItLaterApi _api;
+        private ReadItLaterApi _api;
 
         [TestInitialize]
         public void TestSetup()
@@ -22,23 +18,25 @@ namespace ReadItLaterApi.Metro.Tests
         }
 
         [TestMethod]        
-        public void TestVerifyCredentials()
+        public async Task TestVerifyCredentials()
         {
-            Assert.IsTrue(_api.VerifyCredentials());
+            var result = await _api.VerifyCredentials();
+
+            Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void TestGetReadingList()
+        public async Task TestGetReadingList()
         {
-            var result = _api.GetReadingList();
+            var result = await _api.GetReadingList();
 
             Assert.IsNotNull(result.List);
         }
 
         [TestMethod]
-        public void TestGetText()
+        public async Task TestGetText()
         {
-            var result = _api.GetText("http://arstechnica.com/microsoft/news/2012/01/windows-8-storage-spaces-detailed-pooling-redundant-disk-space-for-all.ars");
+            var result = await _api.GetText("http://arstechnica.com/microsoft/news/2012/01/windows-8-storage-spaces-detailed-pooling-redundant-disk-space-for-all.ars");
 
             Assert.IsFalse(string.IsNullOrWhiteSpace(result));
         }

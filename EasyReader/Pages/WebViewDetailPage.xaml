@@ -176,8 +176,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Rectangle x:Name="WebViewRectangle" Grid.Row="1" Visibility="Collapsed" 
-                   Margin="{Binding Margin, ElementName=ContentWebView}"/>
+        <!--<Rectangle x:Name="WebViewRectangle" Grid.Row="1" Visibility="Collapsed" 
+                   Margin="{Binding Margin, ElementName=ContentWebView}"/>-->
 
         <WebView Grid.Row="1" x:Name="ContentWebView"/>
 

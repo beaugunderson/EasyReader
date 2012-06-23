@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.Activation;
-using Windows.Data.Json;
+using Windows.ApplicationModel.Background;
+using Windows.Networking.Connectivity;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -15,7 +16,6 @@ using EasyReader.Hacks;
 using EasyReader.Pages;
 
 using ReadItLaterApi.Metro;
-using System.Collections.Generic;
 
 namespace EasyReader
 {
@@ -23,18 +23,18 @@ namespace EasyReader
     {
         private static ReadingListDataSource _readingListData;
 
-        private Windows.Storage.ApplicationData _applicationData = Windows.Storage.ApplicationData.Current;
+        private readonly ApplicationData _applicationData = ApplicationData.Current;
 
-        private Timer _updateReadingListTimer;
+        private DispatcherTimer _updateReadingListTimer;
 
         private static CollectionSummaryPage _summaryPage;
         private static WebViewDetailPage _detailPage;
 
         public ReadItLaterApi.Metro.ReadItLaterApi ReadItLaterApi { get; set; }
 
-        public static ObservableVector<object> ReadingList { get; set; }
+        public static ObservableVector<object> ReadingList { get; private set; }
 
-        public static bool IsUpdating { get; set; }
+        public static bool IsUpdating { get; private set; }
 
         public App()
         {
@@ -45,16 +45,50 @@ namespace EasyReader
         {
             get
             {
-                var _internetConnectionProfile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+                var internetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
 
-                if (_internetConnectionProfile != null &&
-                    _internetConnectionProfile.Connected)
+                if (internetConnectionProfile == null)
                 {
-                    return true;
+                    return false;
                 }
 
-                return false;
+                var connectionStatus = internetConnectionProfile.GetNetworkConnectivityLevel();
+
+                return connectionStatus == NetworkConnectivityLevel.InternetAccess ||
+                       connectionStatus == NetworkConnectivityLevel.ConstrainedInternetAccess;
             }
+        }
+
+        private async void RegisterBackgroundTasks()
+        {
+            var builder = new BackgroundTaskBuilder
+            {
+                Name = "BackgroundUpdateReadingList",
+                TaskEntryPoint = "EasyReader.BackgroundTasks.UpdateReadingList"
+            };
+
+            await BackgroundExecutionManager.RequestAccessAsync();
+
+            IBackgroundTrigger trigger = new TimeTrigger(15, true);
+            builder.SetTrigger(trigger);
+
+            IBackgroundCondition condition = new SystemCondition(SystemConditionType.InternetAvailable);
+            builder.AddCondition(condition);
+
+            IBackgroundTaskRegistration task = builder.Register();
+
+            task.Progress += task_Progress;
+            task.Completed += task_Completed;
+        }
+
+        private void task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void task_Progress(BackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args)
+        {
+            throw new NotImplementedException();
         }
 
         private bool CheckCredentials()
@@ -64,30 +98,32 @@ namespace EasyReader
             if (roamingSettings.Values.ContainsKey("username") &&
                 roamingSettings.Values.ContainsKey("password"))
             {
-                var _username = roamingSettings.Values["username"] as string;
-                var _password = roamingSettings.Values["password"] as string;
+                var username = roamingSettings.Values["username"] as string;
+                var password = roamingSettings.Values["password"] as string;
 
-                if (string.IsNullOrWhiteSpace(_username) ||
-                    string.IsNullOrWhiteSpace(_password))
+                if (string.IsNullOrWhiteSpace(username) ||
+                    string.IsNullOrWhiteSpace(password))
                 {
+                    Debug.WriteLine("No credentials.");
+
                     return false;
                 }
-                else
-                {
-                    ReadItLaterApi = new ReadItLaterApi.Metro.ReadItLaterApi(_username, _password);
+                
+                ReadItLaterApi = new ReadItLaterApi.Metro.ReadItLaterApi(username, password);
 
-                    return true;
-                }
+                return true;
             }
+
+            Debug.WriteLine("No credentials.");
 
             return false;
         }
 
-        public void UpdateReadingList()
+        public async Task UpdateReadingList()
         {
             Debug.WriteLine("UpdateReadingList()");
 
-            if (!App.HasConnectivity)
+            if (!HasConnectivity)
             {
                 return;
             }
@@ -97,29 +133,27 @@ namespace EasyReader
                 return;
             }
 
-            var readingList = ReadItLaterApi.GetReadingList();
+            var readingList = await ReadItLaterApi.GetReadingList();
 
             // Serialize the reading list to the roaming data directory
             SaveItemToFile(_applicationData.RoamingFolder, "reading-list", readingList.Stringify());
-
+            
             foreach (var item in readingList.List)
             {
-                var text = GetTextFromListItem(item);
+                var text = await GetRemoteTextFromListItem(item);
 
-                _summaryPage.Dispatcher.Invoke(CoreDispatcherPriority.Normal, (o, target) =>
-                {
-                    _readingListData.AddItem(item.Value, text);
-                }, this, null);
+                _summaryPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    () => _readingListData.AddItem(item.Value, text));
             }
         }
 
-        private string GetTextFromListItem(KeyValuePair<string, ReadingListItem> item)
+        private async Task<string> GetRemoteTextFromListItem(KeyValuePair<string, ReadingListItem> item)
         {
-            Debug.WriteLine(string.Format("Getting text for '{0}'", item.Key));
+            Debug.WriteLine(string.Format("Getting remote text for '{0}'", item.Key));
 
-            var text = ReadItLaterApi.GetText(item.Value);
+            var text = await ReadItLaterApi.GetText(item.Value);
 
-            Debug.WriteLine(string.Format("Saving text for '{0}'", item.Key));
+            Debug.WriteLine("Writing {0} characters to '{1}'", text.Length, item.Key);
 
             SaveItemToFile(_applicationData.LocalFolder, item.Key, text);
 
@@ -128,14 +162,11 @@ namespace EasyReader
 
         public async void SaveItemToFile(StorageFolder folder, string id, string data)
         {
-            Debug.WriteLine(string.Format("Local folder: {0}",
-                _applicationData.LocalFolder.Path));
-
             var filename = string.Format("{0}.json", id);
 
-            var file = await folder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.ReplaceExisting);
+            var file = await folder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
 
-            var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.ReadWrite);
+            var stream = await file.OpenAsync(FileAccessMode.ReadWrite);
 
             var outputStream = stream.GetOutputStreamAt(0);
 
@@ -152,14 +183,11 @@ namespace EasyReader
         {
             var filename = string.Format("{0}.json", id);
 
-            Debug.WriteLine(string.Format("Getting text for '{0}'", filename));
+            Debug.WriteLine(string.Format("Reading from '{0}'", filename));
 
-            Debug.WriteLine(string.Format("Local folder: {0}",
-                _applicationData.LocalFolder.Path));
+            var file = await folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists);
 
-            var file = await folder.CreateFileAsync(filename, Windows.Storage.CreationCollisionOption.OpenIfExists);
-
-            var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+            var stream = await file.OpenAsync(FileAccessMode.Read);
 
             var size = stream.Size;
 
@@ -167,18 +195,16 @@ namespace EasyReader
             {
                 return null;
             }
-            else
-            {
-                var inputStream = stream.GetInputStreamAt(0);
 
-                var reader = new Windows.Storage.Streams.DataReader(inputStream);
+            var inputStream = stream.GetInputStreamAt(0);
 
-                await reader.LoadAsync((uint)size);
+            var reader = new Windows.Storage.Streams.DataReader(inputStream);
 
-                var contents = reader.ReadString((uint)size);
+            await reader.LoadAsync((uint)size);
 
-                return contents;
-            }
+            var contents = reader.ReadString((uint)size);
+
+            return contents;
         }
 
         public void ShowHomePageAndOpenSettings()
@@ -197,7 +223,9 @@ namespace EasyReader
 
         protected async override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            _applicationData.DataChanged += new Windows.Foundation.TypedEventHandler<Windows.Storage.ApplicationData, object>(applicationData_DataChanged);
+            RegisterBackgroundTasks();
+
+            _applicationData.DataChanged += applicationData_DataChanged;
 
             _readingListData = new ReadingListDataSource();
 
@@ -217,76 +245,92 @@ namespace EasyReader
                 ShowHomePageAndOpenSettings();
             }
 
+            Debug.WriteLine("Waiting for items from disk...");
+
             await ReadItemsFromDisk();
 
-            // Start a timer to update the reading list
-            _updateReadingListTimer = new Timer(delegate
-                {
-                    // XXX: Best way to handle a long-running update?
-                    if (IsUpdating)
-                    {
-                        return;
-                    }
+            Debug.WriteLine("Got items from disk.");
 
-                    IsUpdating = true;
+            _updateReadingListTimer = new DispatcherTimer
+            {
+              Interval = TimeSpan.FromMinutes(5)
+            };
 
-                    _summaryPage.UpdateSubTitle();
+            _updateReadingListTimer.Tick += UpdateReadingListTimerOnTick;
 
-                    UpdateReadingList();
+            _updateReadingListTimer.Start();
 
-                    IsUpdating = false;
+            await UpdateReadingListTimerOnTickInner();
+        }
 
-                    _summaryPage.UpdateSubTitle();
-                },
-                null,
-                TimeSpan.FromSeconds(5), 
-                TimeSpan.FromMinutes(5));
+        private async void UpdateReadingListTimerOnTick(object sender, object o)
+        {
+            await UpdateReadingListTimerOnTickInner();
+            
+            Debug.WriteLine("UpdateReadingListTimerOnTick() finished.");
+        }
+
+        private async Task UpdateReadingListTimerOnTickInner()
+        {
+            Debug.WriteLine("UpdateReadingListTimerOnTickInner()");
+
+            // XXX: Best way to handle a long-running update?
+            if (IsUpdating)
+            {
+                return;
+            }
+
+            IsUpdating = true;
+
+            _summaryPage.UpdateSubTitle();
+
+            await UpdateReadingList();
+
+            IsUpdating = false;
+
+            _summaryPage.UpdateSubTitle();
         }
 
         private async Task ReadItemsFromDisk()
         {
             var json = await ReadItemFromFile(_applicationData.RoamingFolder, "reading-list");
 
-            if (json != null)
+            if (json == null)
             {
-                var list = new ReadingList(json);
+                return;
+            }
 
-                foreach (var item in list.List)
-                {
-                    var content = await ReadItemFromFile(_applicationData.LocalFolder, item.Key);
+            var list = new ReadingList(json);
 
-                    if (content == null)
-                    {
-                        if (App.HasConnectivity)
-                        {
-                            content = GetTextFromListItem(item);
-                        }
-                        else
-                        {
-                            content = "Sorry, this content hasn't been saved for offline reading.";
-                        }
-                    }
+            foreach (var item in list.List)
+            {
+                var content = await ReadItemFromFile(_applicationData.LocalFolder, item.Key) ?? 
+                    (HasConnectivity ? 
+                        await GetRemoteTextFromListItem(item) : 
+                        "Sorry, this content hasn't been saved for offline reading.");
 
-                    _readingListData.AddItem(item.Value, content);
-                }
+                _readingListData.AddItem(item.Value, content);
             }
         }
 
         private void SetupSettingsPane()
         {
-            var preferencesCommand = new SettingsCommand(KnownSettingsCommand.Preferences, (handler) =>
-            {
-                ShowHomePageAndOpenSettings();
-            });
-
             var pane = SettingsPane.GetForCurrentView();
 
-            pane.ApplicationCommands.Add(preferencesCommand);
+            pane.CommandsRequested += pane_CommandsRequested;
         }
 
-        private void applicationData_DataChanged(Windows.Storage.ApplicationData sender, object args)
+        void pane_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
-            // XXX: Do something here?
+            var preferencesCommand = new SettingsCommand("preferences", "Preferences", 
+                handler => ShowHomePageAndOpenSettings());
+            
+            args.Request.ApplicationCommands.Add(preferencesCommand);
+        }
+
+        private void applicationData_DataChanged(ApplicationData sender, object args)
+        {
+            Debug.WriteLine("DataChanged");
         }
 
         public static void ShowCollectionSummary()
@@ -300,9 +344,10 @@ namespace EasyReader
 
         public static void ShowDetail(object item)
         {
-            _detailPage = new WebViewDetailPage();
-
-            _detailPage.Item = (ReadingListDataItem)item;
+            _detailPage = new WebViewDetailPage
+            {
+                Item = (ReadingListDataItem) item
+            };
 
             Window.Current.Content = _detailPage;
         }

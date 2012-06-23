@@ -202,7 +202,7 @@
 
     <!-- Temporary: Item container styles - to be deleted since an up to date version of these styles will be in generic.xaml -->
 
-    <Style x:Key="GridTileStyle" TargetType="ListViewItem">
+    <Style x:Key="GridTileStyle" TargetType="GridViewItem">
       <Setter Property="FontFamily" Value="Segoe UI" />
       <Setter Property="Foreground" Value="White" />
       <!--<Setter Property="Height" Value="Auto" />
@@ -215,7 +215,7 @@
       <Setter Property="TabNavigation" Value="Local" />
       <Setter Property="Template">
         <Setter.Value>
-          <ControlTemplate TargetType="ListViewItem">
+          <ControlTemplate TargetType="GridViewItem">
             <Grid Background="{TemplateBinding Background}">
               <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
@@ -269,7 +269,7 @@
       </Setter>
     </Style>
 
-    <Style x:Key="ListTileStyle" TargetType="ListViewItem">
+    <Style x:Key="ListTileStyle" TargetType="GridViewItem">
       <Setter Property="FontFamily" Value="Segoe UI" />
       <Setter Property="Foreground" Value="White" />
       <Setter Property="Height" Value="Auto" />
@@ -282,7 +282,7 @@
       <Setter Property="TabNavigation" Value="Local" />
       <Setter Property="Template">
         <Setter.Value>
-          <ControlTemplate TargetType="ListViewItem">
+          <ControlTemplate TargetType="GridViewItem">
             <Grid Background="{TemplateBinding Background}">
               <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
@@ -336,7 +336,7 @@
       </Setter>
     </Style>
 
-    <Style x:Key="SnapListTileStyle" TargetType="ListViewItem" BasedOn="{StaticResource ListTileStyle}">
+    <Style x:Key="SnapListTileStyle" TargetType="GridViewItem" BasedOn="{StaticResource ListTileStyle}">
       <Setter Property="Margin" Value="0,0,0,0" />
     </Style>
     

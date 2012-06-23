@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-using Windows.Foundation;
 using Windows.Graphics.Display;
-
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
 
 using EasyReader.Data;
 
@@ -26,9 +21,9 @@ namespace EasyReader.Pages
 
         // View state management for switching among Full, Fill, Snapped, and Portrait states
         private DisplayPropertiesEventHandler _displayHandler;
-        private TypedEventHandler<ApplicationLayout, ApplicationLayoutChangedEventArgs> _layoutHandler;
+        private WindowSizeChangedEventHandler _layoutHandler; 
 
-        private const string _formatString = @"<!DOCTYPE html>
+        private const string FORMAT_STRING = @"<!DOCTYPE html>
 <html>
  <head>
   <title>{0}</title>
@@ -73,21 +68,23 @@ namespace EasyReader.Pages
         private string WrapHtml(string title, string body)
         {
             // Remove weird dangling element and nodeIndex attributes
-            Regex dangling = new Regex(@"\s*</d\s*$", RegexOptions.IgnoreCase);
-            Regex nodeIndex = new Regex(@"\s+nodeIndex=""\d+""", RegexOptions.IgnoreCase);
+            var dangling = new Regex(@"\s*</d\s*$", RegexOptions.IgnoreCase);
+            var nodeIndex = new Regex(@"\s+nodeIndex=""\d+""", RegexOptions.IgnoreCase);
 
             body = dangling.Replace(body, "");
             body = nodeIndex.Replace(body, "");
 
             body = body.Trim();
 
-            return string.Format(_formatString, title, body);
+            return string.Format(FORMAT_STRING, title, body);
         }
 
         public ReadingListDataItem Item { get; set; }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("Page_Loaded()");
+
             if (_displayHandler == null)
             {
                 _displayHandler = Page_OrientationChanged;
@@ -95,22 +92,23 @@ namespace EasyReader.Pages
             }
 
             DisplayProperties.OrientationChanged += _displayHandler;
-            ApplicationLayout.GetForCurrentView().LayoutChanged += _layoutHandler;
-            
+
+            Window.Current.SizeChanged += _layoutHandler;
+
             SetCurrentOrientation(this);
 
-            ContentWebView.LoadCompleted += new Windows.UI.Xaml.Navigation.LoadCompletedEventHandler(ContentWebView_LoadCompleted);
-            ContentWebView.ScriptNotify += new NotifyEventHandler(ContentWebView_ScriptNotify);
+            ContentWebView.LoadCompleted += ContentWebView_LoadCompleted;
+            ContentWebView.ScriptNotify += ContentWebView_ScriptNotify;
 
             if (Item != null)
             {
                 PageTitle.Text = Item.Title;
 
-                var content = WrapHtml(Item.Title, Item.Content);
+                // var content = WrapHtml(Item.Title, Item.Content);
 
-                //ContentWebView.Navigate(new Uri("http://www.bing.com/"));
+                // ContentWebView.Navigate(new Uri("http://www.bing.com/"));
 
-                ContentWebView.NavigateToString(content);
+                // ContentWebView.NavigateToString(content);
             }
         }
 
@@ -145,10 +143,11 @@ namespace EasyReader.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             DisplayProperties.OrientationChanged -= _displayHandler;
-            ApplicationLayout.GetForCurrentView().LayoutChanged -= _layoutHandler;
+
+            Window.Current.SizeChanged -= _layoutHandler;
         }
 
-        private void Page_LayoutChanged(object sender, ApplicationLayoutChangedEventArgs e)
+        private void Page_LayoutChanged(object sender, WindowSizeChangedEventArgs e)
         {
             SetCurrentOrientation(this);
         }
@@ -160,7 +159,7 @@ namespace EasyReader.Pages
 
         private void SetCurrentOrientation(Control viewStateAwareControl)
         {
-            VisualStateManager.GoToState(viewStateAwareControl, this.GetViewState(), false);
+            VisualStateManager.GoToState(viewStateAwareControl, GetViewState(), false);
         }
 
         private String GetViewState()
@@ -173,14 +172,14 @@ namespace EasyReader.Pages
                 return "Portrait";
             }
 
-            var layout = ApplicationLayout.Value;
+            var layout = ApplicationView.Value;
 
-            if (layout == ApplicationLayoutState.Filled)
+            if (layout == ApplicationViewState.Filled)
             {
                 return "Fill";
             }
             
-            if (layout == ApplicationLayoutState.Snapped)
+            if (layout == ApplicationViewState.Snapped)
             {
                 return "Snapped";
             }

@@ -1,18 +1,10 @@
 using System;
-using System.Xml;
 using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
-
 using Windows.Data.Xml.Dom;
-using Windows.UI.Xaml;
-
-using MarkupConverter.Metro;
 using MarkupConverter.Metro.Hacks;
 
-namespace MarkupConverter
+namespace MarkupConverter.Metro
 {
     /// <summary>
     /// HtmlToXamlConverter is a static class that takes an HTML string

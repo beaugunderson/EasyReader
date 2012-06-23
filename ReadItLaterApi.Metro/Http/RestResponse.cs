@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 
 namespace ReadItLaterApi.Metro.Http
 {
@@ -16,7 +12,7 @@ namespace ReadItLaterApi.Metro.Http
 
         public RestResponse(HttpResponseMessage response)
         {
-            this.HttpResponseMessage = response;
+            HttpResponseMessage = response;
         }
     }
 }

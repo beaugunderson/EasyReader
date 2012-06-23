@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="a39a24d7-f3e0-4d17-b844-ce70597c99da" Publisher="CN=beau" Version="1.0.0.1" />
+  <Identity Name="a39a24d7-f3e0-4d17-b844-ce70597c99da" Publisher="CN=Beau Gunderson" Version="1.0.0.1" />
   <Properties>
     <DisplayName>EasyReader</DisplayName>
     <PublisherDisplayName>beau</PublisherDisplayName>
@@ -16,10 +16,23 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="easyreader.exe" EntryPoint="EasyReader.App">
-      <VisualElements DisplayName="Easy Reader" Logo="Images\Small-Tile.png" SmallLogo="Images\Small-Logo.png" Description="Easy Reader makes your tablet useful by queueing up the news, blog posts, and other reading material that you want to read on the go." ForegroundText="light" BackgroundColor="#222222" InitialRotationPreference="landscape">
+      <VisualElements DisplayName="Easy Reader" Logo="Images\Small-Tile.png" SmallLogo="Images\Small-Logo.png" Description="Easy Reader makes your tablet useful by queueing up the news, blog posts, and other reading material that you want to read on the go." ForegroundText="light" BackgroundColor="#222222">
+        <LockScreen Notification="badge" BadgeLogo="Images\Lock-Screen-Badge.png" />
         <DefaultTile WideLogo="Images\Wide-Tile.png" />
         <SplashScreen Image="Images\Splash-Screen.png" />
+        <InitialRotationPreference>
+          <Rotation Preference="portrait" />
+          <Rotation Preference="landscape" />
+        </InitialRotationPreference>
       </VisualElements>
+      <Extensions>
+        <Extension Category="windows.backgroundTasks" EntryPoint="EasyReader.BackgroundTasks.UpdateReadingList">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

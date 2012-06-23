@@ -12,11 +12,16 @@
     <OSMaxVersionTested>6.2</OSMaxVersionTested>
   </Prerequisites>
   <Resources>
-    <Resource Language="en-us" />
+    <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="MSTestExecutor.App" Executable="MSTestExecutor.Appx.exe" EntryPoint="MSTestExecutor.App">
-      <VisualElements DisplayName="NoTiles" Logo="Images\UnitTestLogo.png" SmallLogo="Images\UnitTestSmallLogo.png" Description="MSTestExecutor.App" ForegroundText="light" BackgroundColor="#0084FF" InitialRotationPreference="portrait">
+    <Application Id="vstest.executionengine.App" Executable="vstest.executionengine.appcontainer.exe" EntryPoint="vstest.executionengine.App">
+      <VisualElements DisplayName="NoUIEntryPoints" Logo="Images\UnitTestLogo.png" SmallLogo="Images\UnitTestSmallLogo.png" Description="vstest.executionengine.App" ForegroundText="light" BackgroundColor="#0084FF">
+        <SplashScreen Image="Images\UnitTestSplashScreen.png" />
+      </VisualElements>
+    </Application>
+    <Application Id="vstest.executionengine.x86.App" Executable="vstest.executionengine.appcontainer.x86.exe" EntryPoint="vstest.executionengine.x86.App">
+      <VisualElements DisplayName="NoUIEntryPoints" Logo="Images\UnitTestLogo.png" SmallLogo="Images\UnitTestSmallLogo.png" Description="vstest.executionengine.x86.App" ForegroundText="light" BackgroundColor="#0084FF">
         <SplashScreen Image="Images\UnitTestSplashScreen.png" />
       </VisualElements>
     </Application>

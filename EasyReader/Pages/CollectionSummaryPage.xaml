@@ -10,7 +10,7 @@
     d:DesignHeight="768" 
     d:DesignWidth="1366" PointerPressed="UserControl_PointerPressed">
     <UserControl.Resources>
-        <CollectionViewSource x:Name="CollectionViewSource" x:Key="CollectionViewSource" />
+        <CollectionViewSource x:Name="CollectionViewSource" />
 
         <Style x:Key="CategoryPanelStyle" TargetType="StackPanel">
             <Setter Property="HorizontalAlignment" Value="Left"/>

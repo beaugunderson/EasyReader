@@ -1,6 +1,4 @@
-﻿using MarkupConverter;
-
-namespace MarkupConverter
+﻿namespace MarkupConverter.Metro
 {
     public interface IMarkupConverter
     {

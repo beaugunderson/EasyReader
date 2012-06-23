@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using Windows.Data.Json;
 
 namespace ReadItLaterApi.Metro
@@ -14,11 +15,11 @@ namespace ReadItLaterApi.Metro
 
         public Dictionary<string, ReadingListItem> List { get; set; }
 
-        private JsonObject _json;
+        private readonly JsonObject _json;
 
         public ReadingList(string json)
         {
-            _json = new JsonObject(json);
+            _json = JsonObject.Parse(json);
 
             Status = (int)_json.GetNamedNumber("status");
             Since = (long)_json.GetNamedNumber("since");
@@ -26,7 +27,8 @@ namespace ReadItLaterApi.Metro
 
             List = new Dictionary<string, ReadingListItem>();
 
-            // XXX: This throws if 'list: []' (i.e. an empty array) // Microsoft bug?
+            // XXX: This throws if 'list: []' (i.e. an empty array)
+            // Microsoft bug?
             try
             {
                 var list = _json.GetNamedObject("list");

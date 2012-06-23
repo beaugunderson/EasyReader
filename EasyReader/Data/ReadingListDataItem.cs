@@ -1,6 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
 
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 

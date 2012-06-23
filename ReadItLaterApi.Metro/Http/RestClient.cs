@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ReadItLaterApi.Metro.Http
 {
     public class RestClient : IDisposable
     {
-        private HttpClient _client;
+        private readonly HttpClient _client;
 
         public string BaseUrl { get; set; }
         public string UserAgent { get; set; }
@@ -23,12 +20,9 @@ namespace ReadItLaterApi.Metro.Http
 
         protected virtual void Dispose(bool cleanupNativeAndManaged)
         {
-            if (cleanupNativeAndManaged)
+            if (cleanupNativeAndManaged && _client != null)
             {
-                if (_client != null)
-                {
-                    _client.Dispose();
-                }
+                _client.Dispose();
             }
         }
 
@@ -48,9 +42,9 @@ namespace ReadItLaterApi.Metro.Http
             UserAgent = "C# .Net 4.5";
         }
 
-        public RestResponse Execute(RestRequest request)
+        public async Task<RestResponse> Execute(RestRequest request, bool errorOnNonSuccess = true)
         {
-            Uri address = new Uri(BaseUrl + "/" + request.Url);
+            var address = new Uri(BaseUrl + "/" + request.Url);
 
             var message = new HttpRequestMessage(request.Method, address);
             
@@ -62,12 +56,14 @@ namespace ReadItLaterApi.Metro.Http
             }
 
             // Add the URL-encoded data
-            message.Content = new System.Net.Http.FormUrlEncodedContent(request.Parameters);
+            message.Content = new FormUrlEncodedContent(request.Parameters);
 
-            // XXX: Async?
-            var response = _client.Send(message);
+            var response = await _client.SendAsync(message);
 
-            response.EnsureSuccessStatusCode();
+            if (errorOnNonSuccess)
+            {
+                response.EnsureSuccessStatusCode();
+            }
 
             return new RestResponse(response);
         }

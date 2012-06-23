@@ -12,7 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <PackageCertificateThumbprint>4AF4C0ACAF7B89E56B5450895DAC9D089C037381</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>9C118230838C4246AF0E6AD51BCCBA3204C99C1A</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>EasyReader_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -58,6 +58,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\Lock-Screen-Badge.png" />
     <Content Include="Images\Small-Logo.png" />
     <Content Include="Images\Small-Tile.png" />
     <Content Include="Images\Splash-Screen.png" />
@@ -92,15 +93,19 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EasyReader.BackgroundTasks\EasyReader.BackgroundTasks.csproj">
+      <Project>{88829c20-b202-4c77-b980-052ad890ea23}</Project>
+      <Name>EasyReader.BackgroundTasks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ReadItLaterApi.Metro\ReadItLaterApi.Metro.csproj">
       <Project>{968ec596-fa63-45bc-aba6-816a978832dd}</Project>
       <Name>ReadItLaterApi.Metro</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <None Include="EasyReader_TemporaryKey.pfx" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v1.0\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

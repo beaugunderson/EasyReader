@@ -17,12 +17,12 @@ namespace ReadItLaterApi.Metro
         public ReadingListItem(JsonObject json)
         {
             // Set defaults
-            long itemId = -1;
+            long itemId;
             
-            long timeAdded = -1;
-            long timeUpdated = -1;
+            long timeAdded;
+            long timeUpdated;
 
-            int state = -1;
+            int state;
 
             // Try parsing the strings into numbers
             long.TryParse(json.GetNamedString("item_id"), out itemId);

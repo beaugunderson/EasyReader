@@ -8,12 +8,11 @@
 //
 //---------------------------------------------------------------------------
 
-namespace MarkupConverter
-{
-    using System.Diagnostics;
-    using System.Collections;
-    using System.Collections.Generic;
+using System.Diagnostics;
+using System.Collections.Generic;
 
+namespace MarkupConverter.Metro
+{
     /// <summary>
     /// HtmlSchema class
     /// maintains static information about HTML structure

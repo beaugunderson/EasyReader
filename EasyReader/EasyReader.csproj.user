@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <UseSimulator>False</UseSimulator>
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
-    <RemoteDebugMachine>BEAU-TABLET</RemoteDebugMachine>
+    <RemoteDebugMachine>5.104.99.82</RemoteDebugMachine>
     <UseAuthentication>True</UseAuthentication>
   </PropertyGroup>
 </Project>

@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Windows.Foundation;
 
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
 
 namespace EasyReader.Controls
 {
     public sealed partial class SettingsUserControl
     {
-        private Windows.Storage.ApplicationData _applicationData;
-        private Windows.Storage.ApplicationDataContainer _roamingSettings;
+        private readonly Windows.Storage.ApplicationData _applicationData;
+        private readonly Windows.Storage.ApplicationDataContainer _roamingSettings;
 
         public bool IsInView
         {
@@ -32,7 +25,7 @@ namespace EasyReader.Controls
             _applicationData = Windows.Storage.ApplicationData.Current;
             _roamingSettings = _applicationData.RoamingSettings;
 
-            _applicationData.DataChanged += new TypedEventHandler<Windows.Storage.ApplicationData,object>(_applicationData_DataChanged);
+            _applicationData.DataChanged += _applicationData_DataChanged;
         }
 
         private void _applicationData_DataChanged(Windows.Storage.ApplicationData sender, object args)
@@ -45,18 +38,18 @@ namespace EasyReader.Controls
             // XXX: There has to be an easier way than this...
             if (_roamingSettings.Values.ContainsKey("username"))
             {
-                usernameTextBox.Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (o, target) =>
+                usernameTextBox.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate
                 {
                     usernameTextBox.Text = (string)_roamingSettings.Values["username"];
-                }, this, null);
+                });
             }
 
             if (_roamingSettings.Values.ContainsKey("password"))
             {
-                passwordPasswordBox.Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (o, target) =>
+                passwordPasswordBox.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate
                 {
                     passwordPasswordBox.Password = (string)_roamingSettings.Values["password"];
-                }, this, null);
+                });
             }
         }
 
@@ -104,7 +97,7 @@ namespace EasyReader.Controls
 
                 var api = new ReadItLaterApi.Metro.ReadItLaterApi(username, password);
 
-                if (api.CreateAccount())
+                if (await api.CreateAccount())
                 {
                     SaveSettings(usernameTextBox.Text.Trim(), passwordPasswordBox.Password);
 
@@ -121,12 +114,12 @@ namespace EasyReader.Controls
 
         public void Show()
         {
-                Margin = ThicknessHelper.FromUniformLength(0);
+            Margin = new Thickness(0);
         }
 
         public void Hide()
         {
-                Margin = ThicknessHelper.FromLengths(0, 0, -346, 0);
+            Margin = new Thickness(0, 0, -346, 0);
         }
 
         private void LayoutRoot_Loaded(object sender, RoutedEventArgs e)

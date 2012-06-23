@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-
-using Windows.Data.Json;
-
-using ReadItLaterApi;
+using System.Threading.Tasks;
 using ReadItLaterApi.Metro.Http;
 
 namespace ReadItLaterApi.Metro
@@ -45,73 +41,89 @@ namespace ReadItLaterApi.Metro
             request.Headers["Accept"] = "*/*";
         }
 
-        public RestResponse ExecuteTextRequest(RestRequest request)
+        public async Task<RestResponse> ExecuteTextRequest(RestRequest request, bool errorOnNonSuccess = true)
         {
             var client = GenerateClient(text: true);
 
             AddDefaultParameters(ref request);
 
-            var response = client.Execute(request);
+            var response = await client.Execute(request, errorOnNonSuccess);
 
             return response;
         }
 
-        public RestResponse Execute(RestRequest request)
+        public async Task<RestResponse> Execute(RestRequest request, bool errorOnNonSuccess = true)
         {
             var client = GenerateClient();
 
             AddDefaultParameters(ref request);
 
-            var response = client.Execute(request);
+            var response = await client.Execute(request, errorOnNonSuccess);
 
             return response;
         }
 
         #region API calls
-        public ReadingList GetReadingList()
+        public async Task<ReadingList> GetReadingList()
         {
             var request = new RestRequest("get");
 
-            var response = Execute(request);
+            var response = await Execute(request);
 
-            var json = response.HttpResponseMessage.Content.ReadAsString();
+            var json = await response.HttpResponseMessage.Content.ReadAsStringAsync();
 
             return new ReadingList(json);
         }
 
-        public string GetText(ReadingListItem item)
+        public async Task<string> GetText(ReadingListItem item)
         {
-            return GetText(item.Url);
+            var result = await GetText(item.Url);
+
+            return result;
         }
 
-        public string GetText(string url)
+        public async Task<string> GetText(string url)
         {
             var request = new RestRequest("text");
 
             request.Parameters["url" ] = url;
             request.Parameters["images"] = "1";
 
-            return ExecuteTextRequest(request).HttpResponseMessage.Content.ReadAsString();
+            var result = await ExecuteTextRequest(request, false);
+
+            var content = await result.HttpResponseMessage.Content.ReadAsStringAsync();
+            
+            return content;
         }
 
-        public bool VerifyCredentials()
+        public async Task<bool> VerifyCredentials()
         {
             var request = new RestRequest("auth");
 
             request.Parameters["username"] = Username;
             request.Parameters["password"] = Password;
 
-            return Execute(request).HttpResponseMessage.StatusCode == HttpStatusCode.OK;
+            var response = await Execute(request);
+            
+            return response.HttpResponseMessage.StatusCode == HttpStatusCode.OK;
         }
 
-        public bool CreateAccount()
+        public async Task<bool> CreateAccount()
         {
             var request = new RestRequest("signup");
 
             request.Parameters["username"] = Username;
             request.Parameters["password"] = Password;
 
-            return Execute(request).HttpResponseMessage.StatusCode == HttpStatusCode.OK;
+            //if (response.Result.StatusCode == HttpStatusCode.Forbidden && 
+            //    response.Result.Headers.Contains("X-Error"))
+            //{
+            //    // Alert if the username was already taken
+            //}
+
+            var response = await Execute(request, false);
+            
+            return response.HttpResponseMessage.StatusCode == HttpStatusCode.OK;
         }
         #endregion
     }
