@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
 using Windows.Data.Json;
 
-namespace ReadItLaterApi.Metro
+namespace ReadItLaterApi.Metro.Types
 {
     public class ReadingList
     {
@@ -19,7 +18,12 @@ namespace ReadItLaterApi.Metro
 
         public ReadingList(string json)
         {
-            _json = JsonObject.Parse(json);
+            JsonObject.TryParse(json, out _json);
+
+            if (_json == null)
+            {
+                return;
+            }
 
             Status = (int)_json.GetNamedNumber("status");
             Since = (long)_json.GetNamedNumber("since");

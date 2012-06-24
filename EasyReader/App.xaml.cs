@@ -112,7 +112,7 @@ namespace EasyReader
                 return;
             }
 
-            RegisterBackgroundTasks();
+            //RegisterBackgroundTasks();
 
             _applicationData.DataChanged += applicationData_DataChanged;
 
@@ -134,12 +134,12 @@ namespace EasyReader
 
             _updateReadingListTimer = new DispatcherTimer
             {
-              Interval = TimeSpan.FromMinutes(5)
+              Interval = TimeSpan.FromMinutes(15)
             };
 
             _updateReadingListTimer.Tick += UpdateReadingListTimerOnTick;
 
-            _updateReadingListTimer.Start();
+            //_updateReadingListTimer.Start();
 
             if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
             {
@@ -185,7 +185,10 @@ namespace EasyReader
         {
             // XXX: This is a hack because the WebView on the DetailPage is the topmost
             //      object on the page and hides the settings pane.
-            _rootFrame.Navigate(typeof (ReadingListItemsPage));
+            if (_rootFrame.CurrentSourcePageType != typeof (ReadingListItemsPage))
+            {
+                _rootFrame.Navigate(typeof (ReadingListItemsPage));
+            }
         }
 
         private void applicationData_DataChanged(ApplicationData sender, object args)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
+using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -15,6 +17,8 @@ namespace EasyReader.Pages
     /// </summary>
     public sealed partial class DetailPage
     {
+        private DataTransferManager _dataTransferManager;
+
         public DetailPage()
         {
             InitializeComponent();
@@ -89,6 +93,12 @@ namespace EasyReader.Pages
 
             Debug.WriteLine("DetailPage OnNavigatedTo()");
 
+            // Register this page as a share source
+            _dataTransferManager = DataTransferManager.GetForCurrentView();
+
+            _dataTransferManager.DataRequested += DataTransferManagerOnDataRequested;
+
+            // Set the item to the one we received in the NavigateTo() call
             Item = e.Parameter as ReadingListDataItem;
 
             if (Item != null)
@@ -108,6 +118,24 @@ namespace EasyReader.Pages
                     Debug.WriteLine("ContentWebView.NavigateToString exception!");
                 }
             }
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            // Unregister this page as a share source.
+            _dataTransferManager.DataRequested -= DataTransferManagerOnDataRequested;
+        }
+
+        private void DataTransferManagerOnDataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            var request = args.Request;
+
+            request.Data.Properties.Title = Item.Title;
+            request.Data.Properties.Description = Item.Description;
+
+            request.Data.Properties.ApplicationName = "Easy Reader";
+
+            request.Data.SetUri(new Uri(Item.Link));
         }
 
         /// <summary>

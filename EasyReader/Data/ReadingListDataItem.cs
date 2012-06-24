@@ -91,6 +91,14 @@ namespace EasyReader.Data
             }
         }
 
+        public string ImageUri
+        {
+            get 
+            { 
+                return _imagePath;
+            }
+        }
+
         public void SetImage(String path)
         {
             _image = null;

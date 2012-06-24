@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 using Windows.Storage;
 
-using ReadItLaterApi.Metro;
-
 using EasyReader.Hacks;
+
+using ReadItLaterApi.Metro.Types;
 
 namespace EasyReader.Data
 {
@@ -20,6 +20,8 @@ namespace EasyReader.Data
         public ObservableVector<object> Items { get; private set; }
         
         public ReadItLaterApi.Metro.ReadItLaterApi ReadItLaterApi { get; set; }
+
+        private const bool DEMO = true;
 
         // TODO: Convert to bindings (OnPropertyChanged)
         private bool _isUpdating;
@@ -93,7 +95,15 @@ namespace EasyReader.Data
 
             IsUpdating = true;
 
-            await ReadItemsFromDiskWithRemoteFallback();
+            // XXX: Probably too broad
+            try
+            {
+                await ReadItemsFromDiskWithRemoteFallback();
+            } 
+            catch(Exception)
+            {
+                Debug.WriteLine("Caught exception from ReadItemsFromDiskWithRemoteFallback");    
+            }
 
             IsUpdating = false;
         }
@@ -126,6 +136,12 @@ namespace EasyReader.Data
 
                 return null;
             }
+            catch (Exception)
+            {
+                Debug.WriteLine("Other exception from ReadItemFromFile");
+
+                return null;
+            }
         }
 
         private async Task<DiffbotArticle> GetRemoteTextFromListItem(KeyValuePair<string, ReadingListItem> item)
@@ -133,6 +149,11 @@ namespace EasyReader.Data
             Debug.WriteLine(string.Format("Getting remote text for '{0}'", item.Key));
 
             var diffbotArticle = await ReadItLaterApi.GetText(item.Value);
+
+            if (String.IsNullOrEmpty(diffbotArticle.Title))
+            {
+                return null;
+            }
 
             await WriteItemToFile(_applicationData.LocalFolder, string.Format("{0}.json", item.Key), diffbotArticle.Stringify());
 
@@ -149,7 +170,7 @@ namespace EasyReader.Data
             {
                 Debug.WriteLine("'{0}' wasn't cached, retrieving it from the Internet", item.Key);
 
-                if (App.HasConnectivity)
+                if (App.HasConnectivity && !DEMO)
                 {
                     return await GetRemoteTextFromListItem(item);
                 }
@@ -189,9 +210,19 @@ namespace EasyReader.Data
 
             foreach (var item in list.List)
             {
+                if (DEMO && Items.Count > 75)
+                {
+                    break;
+                }
+
                 Debug.WriteLine("Trying to read '{0}' from disk with remote fallback", item.Key);
 
                 var diffbotArticle = await ReadItemFromDiskWithRemoteFallback(_applicationData.LocalFolder, item);
+
+                if (diffbotArticle == null)
+                {
+                    continue;
+                }
 
                 AddItem(item.Value, diffbotArticle);
             }
@@ -202,9 +233,29 @@ namespace EasyReader.Data
         {
             string url = "";
 
-            foreach (var image in article.Media.Where(image => image.Primary && image.Type == "image"))
+            try
             {
-                url = image.Url;
+                foreach (var image in article.Media.Where(image => image.Primary && image.Type == "image"))
+                {
+                    url = image.Url;
+                }
+
+                if (String.IsNullOrEmpty(url))
+                {
+                    foreach (var image in article.Media.Where(image => image.Type == "image"))
+                    {
+                        url = image.Url;
+                    }
+                }
+
+                if (String.IsNullOrEmpty(url))
+                {
+                    return;
+                }
+            } 
+            catch (Exception)
+            {
+                Debug.WriteLine("Caught exception in AddItem()");   
             }
 
             AddItem(article.Title,

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Windows.Data.Json;
 
-namespace ReadItLaterApi.Metro
+namespace ReadItLaterApi.Metro.Types
 {
     public class DiffbotArticle
     {
@@ -29,11 +30,23 @@ namespace ReadItLaterApi.Metro
             }
         }
 
-        public DiffbotArticle(string json)
+        public DiffbotArticle(string jsonString)
         {
-            _json = JsonObject.Parse(json);
+            JsonObject.TryParse(jsonString, out _json);
+
+            if (_json == null)
+            {
+                return;
+            }
 
             Title = tryGetNamedString("title");
+
+            // Prevent needless exceptions because we don't care about entries without a title
+            if (String.IsNullOrWhiteSpace(Title))
+            {
+                return;
+            }
+
             Author = tryGetNamedString("author");
             Date = tryGetNamedString("date");
             Url = tryGetNamedString("url");
@@ -53,7 +66,7 @@ namespace ReadItLaterApi.Metro
             } 
             catch (Exception)
             {
-                
+                Debug.WriteLine("Caught exception in media JSON");
             }
 
             try
@@ -67,7 +80,7 @@ namespace ReadItLaterApi.Metro
             }
             catch (Exception)
             {
-                
+                Debug.WriteLine("Caught exception in tags JSON");
             }
         }
 

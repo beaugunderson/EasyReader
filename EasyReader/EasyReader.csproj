@@ -44,6 +44,7 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Controls\VariableSizeGridView.cs" />
     <Compile Include="Data\ReadingListDataItem.cs" />
     <Compile Include="Hacks\ObservableVector.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />

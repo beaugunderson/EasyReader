@@ -1,6 +1,8 @@
-﻿using Windows.Data.Json;
+﻿using System;
+using System.Diagnostics;
+using Windows.Data.Json;
 
-namespace ReadItLaterApi.Metro
+namespace ReadItLaterApi.Metro.Types
 {
     public class ReadingListItem
     {
@@ -40,8 +42,15 @@ namespace ReadItLaterApi.Metro
             TimeAdded = timeAdded;
             TimeUpdated = timeUpdated;
 
-            Title = json.GetNamedString("title");
-            Url = json.GetNamedString("url");
+            try
+            {
+                Title = json.GetNamedString("title");
+                Url = json.GetNamedString("url");
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("Caught exception in ReadingListItem()");
+            }
         }
     }
 }

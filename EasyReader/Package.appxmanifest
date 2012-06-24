@@ -21,7 +21,6 @@
         <DefaultTile WideLogo="Images\Wide-Tile.png" />
         <SplashScreen Image="Images\Splash-Screen.png" />
         <InitialRotationPreference>
-          <Rotation Preference="portrait" />
           <Rotation Preference="landscape" />
         </InitialRotationPreference>
       </VisualElements>

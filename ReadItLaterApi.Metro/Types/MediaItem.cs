@@ -1,6 +1,6 @@
 using Windows.Data.Json;
 
-namespace ReadItLaterApi.Metro
+namespace ReadItLaterApi.Metro.Types
 {
     public class MediaItem
     {

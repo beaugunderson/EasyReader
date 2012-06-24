@@ -32,14 +32,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DiffbotArticle.cs" />
+    <Compile Include="Types\DiffbotArticle.cs" />
     <Compile Include="Http\RestClient.cs" />
     <Compile Include="Http\RestRequest.cs" />
     <Compile Include="Http\RestResponse.cs" />
-    <Compile Include="MediaItem.cs" />
+    <Compile Include="Types\MediaItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadingList.cs" />
-    <Compile Include="ReadingListItem.cs" />
+    <Compile Include="Types\ReadingList.cs" />
+    <Compile Include="Types\ReadingListItem.cs" />
     <Compile Include="ReadItLaterApi.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />

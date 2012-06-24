@@ -5,7 +5,6 @@ using System.Diagnostics;
 using Windows.Networking.Connectivity;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Navigation;
 
 using EasyReader.Data;
@@ -58,26 +57,30 @@ namespace EasyReader.Pages
 
             Debug.WriteLine("ReadingListItemsPage.OnNavigatedTo()");
 
-            NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
-
-            _readingListDataSource = (ReadingListDataSource)App.Current.Resources["readingListDataSource"];
-
+            // XXX: Probably a better way to do this; LoadState?
             if (_readingListDataSource == null)
             {
-                Debug.WriteLine("_readingListDataSource was null!");
-                
-                return;
-            }
+                NetworkInformation.NetworkStatusChanged += NetworkInformation_NetworkStatusChanged;
 
-            DefaultViewModel["Items"] = _readingListDataSource.Items;
+                _readingListDataSource = (ReadingListDataSource)App.Current.Resources["readingListDataSource"];
 
-            _readingListDataSource.Items.VectorChanged += Items_VectorChanged;
+                if (_readingListDataSource == null)
+                {
+                    Debug.WriteLine("_readingListDataSource was null!");
+                    
+                    return;
+                }
 
-            _readingListDataSource.UpdatingStatusChanged += UpdatingStatusChanged;
+                DefaultViewModel["Items"] = _readingListDataSource.Items;
 
-            if (_readingListDataSource.Items.Count == 0)
-            {
-                await _readingListDataSource.UpdateReadingList();
+                _readingListDataSource.Items.VectorChanged += Items_VectorChanged;
+
+                _readingListDataSource.UpdatingStatusChanged += UpdatingStatusChanged;
+
+                if (_readingListDataSource.Items.Count == 0)
+                {
+                    await _readingListDataSource.UpdateReadingList();
+                }
             }
         }
 

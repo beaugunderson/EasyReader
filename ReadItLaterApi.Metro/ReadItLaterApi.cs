@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using ReadItLaterApi.Metro.Http;
+using ReadItLaterApi.Metro.Types;
 
 namespace ReadItLaterApi.Metro
 {

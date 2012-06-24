@@ -50,8 +50,13 @@
             ItemTemplate="{StaticResource Standard250x250ItemTemplate}"
             ItemClick="itemGridView_ItemClick"
             IsItemClickEnabled="True"
-            SelectionMode="None"
-            />
+            SelectionMode="None">
+            <!--<GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VariableSizedWrapGrid ItemWidth="250" ItemHeight="250" Orientation="Vertical" Margin="0,0,120,0" MaximumRowsOrColumns="2" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>-->
+        </GridView>
 
         <!-- Vertical scrolling list only used when snapped -->
         <ListView
