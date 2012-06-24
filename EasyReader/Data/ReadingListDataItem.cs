@@ -12,9 +12,9 @@ namespace EasyReader.Data
 
         protected void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
+            if (PropertyChanged != null)
             {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
@@ -24,16 +24,16 @@ namespace EasyReader.Data
         {
             get
             {
-                return this._title;
+                return _title;
             }
 
             set
             {
-                if (this._title != value)
+                if (_title != value)
                 {
-                    this._title = value;
+                    _title = value;
 
-                    this.OnPropertyChanged("Title");
+                    OnPropertyChanged("Title");
                 }
             }
         }
@@ -44,23 +44,23 @@ namespace EasyReader.Data
         {
             get
             {
-                return this._subtitle;
+                return _subtitle;
             }
 
             set
             {
-                if (this._subtitle != value)
+                if (_subtitle != value)
                 {
-                    this._subtitle = value;
+                    _subtitle = value;
 
-                    this.OnPropertyChanged("Subtitle");
+                    OnPropertyChanged("Subtitle");
                 }
             }
         }
 
-        private ImageSource _image = null;
-        private Uri _imageBaseUri = null;
-        private String _imagePath = null;
+        private ImageSource _image;
+        private Uri _imageBaseUri;
+        private String _imagePath;
 
         public ImageSource Image
         {
@@ -75,18 +75,18 @@ namespace EasyReader.Data
                     _image = new BitmapImage(new Uri(_imagePath));
                 }
 
-                return this._image;
+                return _image;
             }
 
             set
             {
-                if (this._image != value)
+                if (_image != value)
                 {
-                    this._image = value;
-                    this._imageBaseUri = null;
-                    this._imagePath = null;
+                    _image = value;
+                    _imageBaseUri = null;
+                    _imagePath = null;
                 
-                    this.OnPropertyChanged("Image");
+                    OnPropertyChanged("Image");
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace EasyReader.Data
 
             _imagePath = path;
             
-            this.OnPropertyChanged("Image");
+            OnPropertyChanged("Image");
         }
 
         public void SetImage(Uri baseUri, String path)
@@ -107,7 +107,7 @@ namespace EasyReader.Data
             _imageBaseUri = baseUri;
             _imagePath = path;
             
-            this.OnPropertyChanged("Image");
+            OnPropertyChanged("Image");
         }
 
         private string _link = string.Empty;
@@ -116,16 +116,16 @@ namespace EasyReader.Data
         {
             get
             {
-                return this._link;
+                return _link;
             }
 
             set
             {
-                if (this._link != value)
+                if (_link != value)
                 {
-                    this._link = value;
+                    _link = value;
 
-                    this.OnPropertyChanged("Link");
+                    OnPropertyChanged("Link");
                 }
             }
         }
@@ -136,16 +136,16 @@ namespace EasyReader.Data
         {
             get
             {
-                return this._category;
+                return _category;
             }
 
             set
             {
-                if (this._category != value)
+                if (_category != value)
                 {
-                    this._category = value;
+                    _category = value;
 
-                    this.OnPropertyChanged("Category");
+                    OnPropertyChanged("Category");
                 }
             }
         }
@@ -155,16 +155,16 @@ namespace EasyReader.Data
         {
             get
             {
-                return this._description;
+                return _description;
             }
 
             set
             {
-                if (this._description != value)
+                if (_description != value)
                 {
-                    this._description = value;
+                    _description = value;
 
-                    this.OnPropertyChanged("Description");
+                    OnPropertyChanged("Description");
                 }
             }
         }
@@ -175,16 +175,16 @@ namespace EasyReader.Data
         {
             get
             {
-                return this._content;
+                return _content;
             }
 
             set
             {
-                if (this._content != value)
+                if (_content != value)
                 {
-                    this._content = value;
+                    _content = value;
 
-                    this.OnPropertyChanged("Content");
+                    OnPropertyChanged("Content");
                 }
             }
         }

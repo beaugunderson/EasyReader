@@ -47,7 +47,7 @@ namespace ReadItLaterApi.Metro.Http
             var address = new Uri(BaseUrl + "/" + request.Url);
 
             var message = new HttpRequestMessage(request.Method, address);
-            
+
             message.Headers.Add("User-Agent", UserAgent);
 
             // Add the request headers
@@ -56,7 +56,10 @@ namespace ReadItLaterApi.Metro.Http
             }
 
             // Add the URL-encoded data
-            message.Content = new FormUrlEncodedContent(request.Parameters);
+            if (request.Parameters.Count > 0)
+            {
+                message.Content = new FormUrlEncodedContent(request.Parameters);
+            }
 
             var response = await _client.SendAsync(message);
 

@@ -5,20 +5,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="using:EasyReader.Controls"
     Width="346"
-    Height="600"
     mc:Ignorable="d"
-    d:DesignHeight="600" 
     d:DesignWidth="346">
     <Grid x:Name="LayoutRoot" Background="Gray" VerticalAlignment="Stretch" Loaded="LayoutRoot_Loaded">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32*"/>
-            <RowDefinition Height="575*"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="16*"/>
             <ColumnDefinition Width="314*"/>
             <ColumnDefinition Width="16*"/>
         </Grid.ColumnDefinitions>
+
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Top" Margin="0" FontSize="36" Grid.Column="1" Grid.Row="1"/>
 
         <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="4.35599994659424,0.384999990463257" Margin="0,56,0,0" FontSize="16" Grid.Column="1" Grid.Row="1" Width="314">

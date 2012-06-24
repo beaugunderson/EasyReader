@@ -12,6 +12,10 @@ namespace ReadItLaterApi.Metro
 
         private const string API_KEY = "0l7A0E49daK3do6d2cpf2bTN9eTbdd6b";
 
+        private const string DIFFBOT_BASE_URL = "http://www.diffbot.com/api";
+
+        private const string DIFFBOT_TOKEN = "6784376a66622c8ac4895dd87764c421";
+
         public string Username { get; set; }
         public string Password { get; set; }
 
@@ -21,11 +25,19 @@ namespace ReadItLaterApi.Metro
             Password = password;
         }
 
-        private RestClient GenerateClient(bool text = false)
+        private RestClient GenerateClient()
         {
             return new RestClient
             {
-                BaseUrl = text ? TEXT_BASE_URL : API_BASE_URL
+                BaseUrl = API_BASE_URL
+            };
+        }
+
+        private RestClient GenerateDiffbotClient()
+        {
+            return new RestClient
+            {
+                BaseUrl = DIFFBOT_BASE_URL
             };
         }
 
@@ -43,9 +55,7 @@ namespace ReadItLaterApi.Metro
 
         public async Task<RestResponse> ExecuteTextRequest(RestRequest request, bool errorOnNonSuccess = true)
         {
-            var client = GenerateClient(text: true);
-
-            AddDefaultParameters(ref request);
+            var client = GenerateDiffbotClient();
 
             var response = await client.Execute(request, errorOnNonSuccess);
 
@@ -75,25 +85,24 @@ namespace ReadItLaterApi.Metro
             return new ReadingList(json);
         }
 
-        public async Task<string> GetText(ReadingListItem item)
+        public async Task<DiffbotArticle> GetText(ReadingListItem item)
         {
             var result = await GetText(item.Url);
 
             return result;
         }
 
-        public async Task<string> GetText(string url)
+        public async Task<DiffbotArticle> GetText(string url)
         {
-            var request = new RestRequest("text");
+            var queryString = string.Format("?token={0}&url={1}&html=true&tags=true", DIFFBOT_TOKEN, url);
 
-            request.Parameters["url" ] = url;
-            request.Parameters["images"] = "1";
+            var request = new RestRequest("article" + queryString);
 
             var result = await ExecuteTextRequest(request, false);
 
             var content = await result.HttpResponseMessage.Content.ReadAsStringAsync();
-            
-            return content;
+
+            return new DiffbotArticle(content);
         }
 
         public async Task<bool> VerifyCredentials()

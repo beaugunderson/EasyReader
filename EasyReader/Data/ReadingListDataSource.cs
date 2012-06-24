@@ -1,16 +1,221 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
-using EasyReader.Hacks;
+using Windows.Storage;
 
 using ReadItLaterApi.Metro;
 
+using EasyReader.Hacks;
+
 namespace EasyReader.Data
 {
-    class ReadingListDataSource
+    // TODO: Add INotifyPropertyChanged
+    public class ReadingListDataSource
     {
         public ObservableVector<object> Items { get; private set; }
+        
+        public ReadItLaterApi.Metro.ReadItLaterApi ReadItLaterApi { get; set; }
+
+        // TODO: Convert to bindings (OnPropertyChanged)
+        private bool _isUpdating;
+        public bool IsUpdating
+        { 
+            get
+            {
+                return _isUpdating;
+            }
+            
+            set
+            {
+                _isUpdating = value; 
+            
+                if (UpdatingStatusChanged != null)
+                {
+                    UpdatingStatusChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        private readonly ApplicationData _applicationData = ApplicationData.Current;
+
+        public EventHandler UpdatingStatusChanged; 
+
+        public bool CheckCredentials()
+        {
+            var roamingSettings = _applicationData.RoamingSettings;
+
+            if (roamingSettings.Values.ContainsKey("username") &&
+                roamingSettings.Values.ContainsKey("password"))
+            {
+                var username = roamingSettings.Values["username"] as string;
+                var password = roamingSettings.Values["password"] as string;
+
+                if (string.IsNullOrWhiteSpace(username) ||
+                    string.IsNullOrWhiteSpace(password))
+                {
+                    Debug.WriteLine("No credentials.");
+
+                    return false;
+                }
+                
+                ReadItLaterApi = new ReadItLaterApi.Metro.ReadItLaterApi(username, password);
+
+                return true;
+            }
+
+            Debug.WriteLine("No credentials.");
+
+            return false;
+        }
+
+        public async Task UpdateReadingList()
+        {
+            Debug.WriteLine("UpdateReadingList()");
+
+            if (IsUpdating)
+            {
+                Debug.WriteLine("Cancelling UpdateReadingList(), already running.");
+
+                return;
+            }
+
+            if (!CheckCredentials())
+            {
+                Debug.WriteLine("Cancelling UpdateReadingList(), no credentials found.");
+
+                return;
+            }
+
+            IsUpdating = true;
+
+            await ReadItemsFromDiskWithRemoteFallback();
+
+            IsUpdating = false;
+        }
+
+        #region Data retrieval methods
+        public async Task WriteItemToFile(StorageFolder folder, string filename, string data)
+        {
+            var file = await folder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
+
+            await FileIO.WriteTextAsync(file, data);
+        }
+
+        public async Task<string> ReadItemFromFile(StorageFolder folder, string filename)
+        {
+            Debug.WriteLine("Reading from '{0}'", filename);
+
+            try
+            {
+                var file = await folder.GetFileAsync(filename);
+
+                var contents = await FileIO.ReadTextAsync(file);
+
+                Debug.WriteLine("'{0}' characters: {1}", filename, contents.Length);
+
+                return contents;
+            } 
+            catch (FileNotFoundException)
+            {
+                Debug.WriteLine("File '{0}' was null!", filename);
+
+                return null;
+            }
+        }
+
+        private async Task<DiffbotArticle> GetRemoteTextFromListItem(KeyValuePair<string, ReadingListItem> item)
+        {
+            Debug.WriteLine(string.Format("Getting remote text for '{0}'", item.Key));
+
+            var diffbotArticle = await ReadItLaterApi.GetText(item.Value);
+
+            await WriteItemToFile(_applicationData.LocalFolder, string.Format("{0}.json", item.Key), diffbotArticle.Stringify());
+
+            return diffbotArticle;
+        }
+
+        private async Task<DiffbotArticle> ReadItemFromDiskWithRemoteFallback(StorageFolder folder, KeyValuePair<string, ReadingListItem> item)
+        {
+            Debug.WriteLine(folder.Path);
+
+            var json = await ReadItemFromFile(folder, string.Format("{0}.json", item.Key));
+
+            if (String.IsNullOrEmpty(json))
+            {
+                Debug.WriteLine("'{0}' wasn't cached, retrieving it from the Internet", item.Key);
+
+                if (App.HasConnectivity)
+                {
+                    return await GetRemoteTextFromListItem(item);
+                }
+
+                return null;
+            }
+
+            return new DiffbotArticle(json);
+        }
+
+        private async Task ReadItemsFromDiskWithRemoteFallback()
+        {
+            var readingListJson = await ReadItemFromFile(_applicationData.LocalFolder, "reading-list.json");
+
+            ReadingList list;
+
+            if (readingListJson == null) {
+                if (App.HasConnectivity)
+                {
+                    // Get the reading list from Pocket
+                    list = await ReadItLaterApi.GetReadingList();
+
+                    // Save the reading list for future use
+                    await WriteItemToFile(_applicationData.LocalFolder, "reading-list", list.Stringify());
+                }
+                else
+                {
+                    Debug.WriteLine("There was no cached list and we don't currently have Internet connectivity, aborting");
+
+                    return;
+                }
+            }
+            else
+            {
+                list = new ReadingList(readingListJson);
+            }
+
+            foreach (var item in list.List)
+            {
+                Debug.WriteLine("Trying to read '{0}' from disk with remote fallback", item.Key);
+
+                var diffbotArticle = await ReadItemFromDiskWithRemoteFallback(_applicationData.LocalFolder, item);
+
+                AddItem(item.Value, diffbotArticle);
+            }
+        }
+        #endregion
+
+        public void AddItem(ReadingListItem item, DiffbotArticle article)
+        {
+            string url = "";
+
+            foreach (var image in article.Media.Where(image => image.Primary && image.Type == "image"))
+            {
+                url = image.Url;
+            }
+
+            AddItem(article.Title,
+                "",
+                "",
+                url,
+                article.Url,
+                "",
+                "",
+                article.Html);
+        }
 
         public void AddItem(ReadingListItem item, string text)
         {
@@ -61,33 +266,6 @@ namespace EasyReader.Data
             var observableCollection = new ObservableCollection<object>();
 
             Items = observableCollection.ToObservableVector<object>();
-
-            String LONG_LOREM_IPSUM = String.Format("{0}\n\n{0}\n\n{0}\n\n{0}",
-                "Curabitur class aliquam vestibulum nam curae maecenas sed integer cras phasellus suspendisse quisque donec dis praesent accumsan bibendum pellentesque condimentum adipiscing etiam consequat vivamus dictumst aliquam duis convallis scelerisque est parturient ullamcorper aliquet fusce suspendisse nunc hac eleifend amet blandit facilisi condimentum commodo scelerisque faucibus aenean ullamcorper ante mauris dignissim consectetuer nullam lorem vestibulum habitant conubia elementum pellentesque morbi facilisis arcu sollicitudin diam cubilia aptent vestibulum auctor eget dapibus pellentesque inceptos leo egestas interdum nulla consectetuer suspendisse adipiscing pellentesque proin lobortis sollicitudin augue elit mus congue fermentum parturient fringilla euismod feugiat");
-
-            //AddItem("Aliquam integer",
-            //        "Maecenas class nam praesent cras aenean mauris aliquam nullam aptent accumsan duis nunc curae donec integer auctor sed congue amet",
-            //        "", "SampleData/Images/LightGray.png",
-            //        "http://www.adatum.com/",
-            //        "Pellentesque nam",
-            //        "Curabitur class aliquam vestibulum nam curae maecenas sed integer cras phasellus suspendisse quisque donec dis praesent accumsan bibendum pellentesque condimentum adipiscing etiam consequat vivamus dictumst aliquam duis convallis scelerisque est parturient ullamcorper aliquet fusce suspendisse nunc hac eleifend amet blandit facilisi condimentum commodo scelerisque faucibus aenean ullamcorper ante mauris dignissim consectetuer nullam lorem vestibulum habitant conubia elementum pellentesque morbi facilisis arcu sollicitudin diam cubilia aptent vestibulum auctor eget dapibus pellentesque inceptos leo egestas interdum nulla consectetuer suspendisse adipiscing pellentesque proin lobortis sollicitudin augue elit mus congue fermentum parturient fringilla euismod feugiat",
-            //        LONG_LOREM_IPSUM);
-
-            //AddItem("Aenean mauris nullam cras",
-            //        "Senectus sem lacus erat sociosqu eros suscipit primis nibh nisi nisl gravida torquent",
-            //        "", "SampleData/Images/MediumGray.png",
-            //        "http://www.baldwinmuseumofscience.com/",
-            //        "Phasellus duis",
-            //        "Est auctor inceptos congue interdum egestas scelerisque pellentesque fermentum ullamcorper cursus dictum lectus suspendisse condimentum libero vitae vestibulum lobortis ligula fringilla euismod class scelerisque feugiat habitasse diam litora adipiscing sollicitudin parturient hendrerit curae himenaeos imperdiet ullamcorper suspendisse nascetur hac gravida pharetra eget donec leo mus nec non malesuada vestibulum pellentesque elit penatibus vestibulum per condimentum porttitor sed adipiscing scelerisque ullamcorper etiam iaculis enim tincidunt erat parturient sem vestibulum eros",
-            //        LONG_LOREM_IPSUM);
-
-            //AddItem("Maecenas aliquam class",
-            //        "Class aliquam curae donec etiam integer quisque nam maecenas cras vivamus duis sed dis aliquam aliquet praesent fusce",
-            //        "", "SampleData/Images/DarkGray.png",
-            //        "http://www.consolidatedmessenger.com/",
-            //        "Condimentum convallis",
-            //        "Imperdiet litora erat netus pellentesque egestas vestibulum euismod eros nibh nulla nisi porta feugiat scelerisque purus est sollicitudin luctus hac nisl ullamcorper vestibulum adipiscing magnis malesuada mattis mauris suspendisse suscipit leo parturient torquent vestibulum gravida pellentesque mollis consectetuer condimentum iaculis risus penatibus pellentesque lacinia ultrices vestibulum vehicula mus laoreet nunc velit porttitor tincidunt volutpat nec adipiscing tristique natoque scelerisque montes odio nostra maecenas ultricies non praesent venenatis accumsan per ullamcorper sollicitudin orci pede suspendisse condimentum posuere scelerisque ornare quam vulputate sed platea pellentesque parturient primis rutrum quis sem vestibulum curabitur sapien",
-            //        LONG_LOREM_IPSUM);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace ReadItLaterApi.Metro.Tests
         {
             var result = await _api.GetText("http://arstechnica.com/microsoft/news/2012/01/windows-8-storage-spaces-detailed-pooling-redundant-disk-space-for-all.ars");
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(result));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(result.Html));
         }
     }
 }

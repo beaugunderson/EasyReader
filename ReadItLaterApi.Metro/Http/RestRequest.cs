@@ -9,8 +9,8 @@ namespace ReadItLaterApi.Metro.Http
 
         public HttpMethod Method { get; set; }
 
-        public Dictionary<string, string> Parameters = new Dictionary<string, string>();
-        public Dictionary<string, string> Headers = new Dictionary<string, string>();
+        public readonly Dictionary<string, string> Parameters = new Dictionary<string, string>();
+        public readonly Dictionary<string, string> Headers = new Dictionary<string, string>();
 
         public RestRequest()
         {

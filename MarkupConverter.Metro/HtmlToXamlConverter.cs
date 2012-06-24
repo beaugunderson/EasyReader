@@ -40,12 +40,12 @@ namespace MarkupConverter.Metro
             XmlElement htmlElement = HtmlParser.ParseHtml(htmlString);
 
             // Decide what name to use as a root
-            string rootElementName = asFlowDocument ? HtmlToXamlConverter.Xaml_FlowDocument : HtmlToXamlConverter.Xaml_Section;
+            string rootElementName = asFlowDocument ? Xaml_FlowDocument : Xaml_Section;
 
             // Create an XmlDocument for generated xaml
-            XmlDocument xamlTree = new XmlDocument();
+            var xamlTree = new XmlDocument();
 
-            XmlElement xamlFlowDocumentElement = xamlTree.CreateElementNS(_xamlNamespace, rootElementName);
+            var xamlFlowDocumentElement = xamlTree.CreateElementNS(_xamlNamespace, rootElementName);
 
             // Source context is a stack of all elements - ancestors of a parentElement
             var sourceContext = new List<IXmlNode>(10);
@@ -761,12 +761,12 @@ namespace MarkupConverter.Metro
             if (htmlListElementName == "ol")
             {
                 // Ordered list
-                xamlListElement.SetAttribute(HtmlToXamlConverter.Xaml_List_MarkerStyle, Xaml_List_MarkerStyle_Decimal);
+                xamlListElement.SetAttribute(Xaml_List_MarkerStyle, Xaml_List_MarkerStyle_Decimal);
             }
             else
             {
                 // Unordered list - all elements other than OL treated as unordered lists
-                xamlListElement.SetAttribute(HtmlToXamlConverter.Xaml_List_MarkerStyle, Xaml_List_MarkerStyle_Disc);
+                xamlListElement.SetAttribute(Xaml_List_MarkerStyle, Xaml_List_MarkerStyle_Disc);
             }
 
             // Apply local properties to list to set marker attribute if specified
@@ -2015,12 +2015,14 @@ namespace MarkupConverter.Metro
         private static void ApplyLocalProperties(XmlElement xamlElement, Dictionary<string,string> localProperties, bool isBlock)
         {
             bool marginSet = false;
+            
             string marginTop = "0";
             string marginBottom = "0";
             string marginLeft = "0";
             string marginRight = "0";
 
             bool paddingSet = false;
+
             string paddingTop = "0";
             string paddingBottom = "0";
             string paddingLeft = "0";
@@ -2029,6 +2031,7 @@ namespace MarkupConverter.Metro
             string borderColor = null;
 
             bool borderThicknessSet = false;
+            
             string borderThicknessTop = "0";
             string borderThicknessBottom = "0";
             string borderThicknessLeft = "0";
@@ -2066,12 +2069,9 @@ namespace MarkupConverter.Metro
                         //SetPropertyValue(xamlElement, TextElement.BackgroundProperty, (string)propertyEnumerator.Value);
                         break;
                     case "text-decoration-underline":
-                        if (!isBlock)
+                        if (!isBlock && propertyEnumerator.Current.Value == "true")
                         {
-                            if ((string)propertyEnumerator.Current.Value == "true")
-                            {
-                                xamlElement.SetAttribute(Xaml_TextDecorations, Xaml_TextDecorations_Underline);
-                            }
+                            xamlElement.SetAttribute(Xaml_TextDecorations, Xaml_TextDecorations_Underline);
                         }
                         break;
                     case "text-decoration-none":
@@ -2338,7 +2338,7 @@ namespace MarkupConverter.Metro
         private static Dictionary<string, string> GetElementProperties(IXmlNode htmlElement, Dictionary<string, string> inheritedProperties, out Dictionary<string, string> localProperties, List<IXmlNode> sourceContext)
         {
             // Start with context formatting properties
-            Dictionary<string,string> currentProperties = new Dictionary<string,string>();
+            var currentProperties = new Dictionary<string,string>();
 
             var propertyEnumerator = inheritedProperties.GetEnumerator();
             
@@ -2349,7 +2349,6 @@ namespace MarkupConverter.Metro
 
             // Identify element name
             string elementName = ((string)htmlElement.LocalName).ToLower();
-            string elementNamespace = (string)htmlElement.NamespaceUri;
 
             // update current formatting properties depending on element tag
 
@@ -2495,18 +2494,15 @@ namespace MarkupConverter.Metro
             //  This is poor man's attribute parsing. Replace it by real css parsing
             if (cssStyle != null)
             {
-                string[] styleValues;
-
                 attributeName = attributeName.ToLower();
 
                 // Check for width specification in style string
-                styleValues = cssStyle.Split(';');
+                string[] styleValues = cssStyle.Split(';');
 
                 for (int styleValueIndex = 0; styleValueIndex < styleValues.Length; styleValueIndex++)
                 {
-                    string[] styleNameValue;
+                    string[] styleNameValue = styleValues[styleValueIndex].Split(':');
 
-                    styleNameValue = styleValues[styleValueIndex].Split(':');
                     if (styleNameValue.Length == 2)
                     {
                         if (styleNameValue[0].Trim().ToLower() == attributeName)
@@ -2567,18 +2563,6 @@ namespace MarkupConverter.Metro
             }
 
             return !Double.IsNaN(length);
-        }
-
-        // .................................................................
-        //
-        // Pasring Color Attribute
-        //
-        // .................................................................
-
-        private static string GetColorValue(string colorValue)
-        {
-            // TODO: Implement color conversion
-            return colorValue;
         }
 
         /// <summary>

@@ -10,14 +10,6 @@ namespace EasyReader.Controls
         private readonly Windows.Storage.ApplicationData _applicationData;
         private readonly Windows.Storage.ApplicationDataContainer _roamingSettings;
 
-        public bool IsInView
-        {
-            get
-            {
-                return Margin.Right == 0;
-            }
-        }
-
         public SettingsUserControl()
         {
             InitializeComponent();
